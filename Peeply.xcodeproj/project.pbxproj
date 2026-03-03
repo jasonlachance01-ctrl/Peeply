@@ -1,0 +1,683 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		59694B8BCB74497E8FF1CF98 /* SubscriptionTier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59694B8BCB74497E8FF1CF97 /* SubscriptionTier.swift */; };
+		8960151314CC427D912EFE31 /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8960151314CC427D912EFE30 /* Contact.swift */; };
+		962C1A0D2F46297C002A20B2 /* SupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 962C1A0C2F46297B002A20B2 /* SupportView.swift */; };
+		962C1A0F2F463498002A20B2 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 962C1A0E2F463498002A20B2 /* AboutView.swift */; };
+		962C1A112F463752002A20B2 /* PrivacyPolicyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 962C1A102F463752002A20B2 /* PrivacyPolicyView.swift */; };
+		962C1A132F46376E002A20B2 /* TermsOfServiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 962C1A122F46376D002A20B2 /* TermsOfServiceView.swift */; };
+		96992ACB2F26AC88002914BC /* PeeplyColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96992ACA2F26AC88002914BC /* PeeplyColors.swift */; };
+		96992ACD2F2C4B36002914BC /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96992ACC2F2C4B36002914BC /* SplashView.swift */; };
+		96992ACF2F2E5F31002914BC /* StreakManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96992ACE2F2E5F31002914BC /* StreakManager.swift */; };
+		96992AD12F3270F2002914BC /* PersonOfTheDayManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96992AD02F3270F1002914BC /* PersonOfTheDayManager.swift */; };
+		96992AD32F3270FA002914BC /* PersonOfTheDayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96992AD22F3270FA002914BC /* PersonOfTheDayView.swift */; };
+		96BF2D2D2F1D8DD3001E4E1F /* PeeplyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BF2D2C2F1D8DD3001E4E1F /* PeeplyApp.swift */; };
+		96BF2D2F2F1D8DD3001E4E1F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BF2D2E2F1D8DD3001E4E1F /* ContentView.swift */; };
+		96BF2D312F1D8DD6001E4E1F /* Assets in Resources */ = {isa = PBXBuildFile; fileRef = 96BF2D302F1D8DD6001E4E1F /* Assets */; };
+		96BF2D342F1D8DD6001E4E1F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 96BF2D332F1D8DD6001E4E1F /* Preview Assets.xcassets */; };
+		96BF2D3E2F1D8DD7001E4E1F /* PeeplyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BF2D3D2F1D8DD7001E4E1F /* PeeplyTests.swift */; };
+		96BF2D482F1D8DD7001E4E1F /* PeeplyUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BF2D472F1D8DD7001E4E1F /* PeeplyUITests.swift */; };
+		96BF2D4A2F1D8DD7001E4E1F /* PeeplyUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BF2D492F1D8DD7001E4E1F /* PeeplyUITestsLaunchTests.swift */; };
+		96BF2D502F1D8DD8001E4E1F /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BF2D4F2F1D8DD8001E4E1F /* RootView.swift */; };
+		96BF2D522F1D8DD8001E4E1F /* AppRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BF2D512F1D8DD8001E4E1F /* AppRoute.swift */; };
+		96BF2D542F1D8DD8001E4E1F /* PlanSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BF2D532F1D8DD8001E4E1F /* PlanSelectionView.swift */; };
+		96BF2D562F1D8DD8001E4E1F /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BF2D552F1D8DD8001E4E1F /* OnboardingView.swift */; };
+		96BF2D582F1D8DD8001E4E1F /* ContactImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BF2D572F1D8DD8001E4E1F /* ContactImportView.swift */; };
+		96BF2D5A2F1D8DD8001E4E1F /* ContactListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BF2D592F1D8DD8001E4E1F /* ContactListView.swift */; };
+		96BF2D5C2F1D8DD8001E4E1F /* ContactDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BF2D5B2F1D8DD8001E4E1F /* ContactDetailView.swift */; };
+		ADCEB2086C204EA088E48C83 /* OnboardingAnswer.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADCEB2086C204EA088E48C82 /* OnboardingAnswer.swift */; };
+		F5E70FB42E6C434591126597 /* PeeplyUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E70FB42E6C434591126596 /* PeeplyUser.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		96BF2D3A2F1D8DD7001E4E1F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 96BF2D212F1D8DD3001E4E1F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 96BF2D282F1D8DD3001E4E1F;
+			remoteInfo = Peeply;
+		};
+		96BF2D442F1D8DD7001E4E1F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 96BF2D212F1D8DD3001E4E1F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 96BF2D282F1D8DD3001E4E1F;
+			remoteInfo = Peeply;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		59694B8BCB74497E8FF1CF97 /* SubscriptionTier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionTier.swift; sourceTree = "<group>"; };
+		8960151314CC427D912EFE30 /* Contact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
+		962C1A0C2F46297B002A20B2 /* SupportView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SupportView.swift; path = Views/SupportView.swift; sourceTree = "<group>"; };
+		962C1A0E2F463498002A20B2 /* AboutView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AboutView.swift; path = Views/AboutView.swift; sourceTree = "<group>"; };
+		962C1A102F463752002A20B2 /* PrivacyPolicyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PrivacyPolicyView.swift; path = Views/PrivacyPolicyView.swift; sourceTree = "<group>"; };
+		962C1A122F46376D002A20B2 /* TermsOfServiceView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TermsOfServiceView.swift; path = Views/TermsOfServiceView.swift; sourceTree = "<group>"; };
+		96992AC92F26A227002914BC /* Peeply.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Peeply.entitlements; sourceTree = "<group>"; };
+		96992ACA2F26AC88002914BC /* PeeplyColors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeeplyColors.swift; sourceTree = "<group>"; };
+		96992ACC2F2C4B36002914BC /* SplashView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
+		96992ACE2F2E5F31002914BC /* StreakManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreakManager.swift; sourceTree = "<group>"; };
+		96992AD02F3270F1002914BC /* PersonOfTheDayManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersonOfTheDayManager.swift; sourceTree = "<group>"; };
+		96992AD22F3270FA002914BC /* PersonOfTheDayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersonOfTheDayView.swift; sourceTree = "<group>"; };
+		96BF2D292F1D8DD3001E4E1F /* Peeply.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Peeply.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		96BF2D2C2F1D8DD3001E4E1F /* PeeplyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeeplyApp.swift; sourceTree = "<group>"; };
+		96BF2D2E2F1D8DD3001E4E1F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		96BF2D302F1D8DD6001E4E1F /* Assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Assets; sourceTree = "<group>"; };
+		96BF2D332F1D8DD6001E4E1F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		96BF2D392F1D8DD7001E4E1F /* PeeplyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PeeplyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		96BF2D3D2F1D8DD7001E4E1F /* PeeplyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeeplyTests.swift; sourceTree = "<group>"; };
+		96BF2D432F1D8DD7001E4E1F /* PeeplyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PeeplyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		96BF2D472F1D8DD7001E4E1F /* PeeplyUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeeplyUITests.swift; sourceTree = "<group>"; };
+		96BF2D492F1D8DD7001E4E1F /* PeeplyUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeeplyUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		96BF2D4F2F1D8DD8001E4E1F /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		96BF2D512F1D8DD8001E4E1F /* AppRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRoute.swift; sourceTree = "<group>"; };
+		96BF2D532F1D8DD8001E4E1F /* PlanSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanSelectionView.swift; sourceTree = "<group>"; };
+		96BF2D552F1D8DD8001E4E1F /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		96BF2D572F1D8DD8001E4E1F /* ContactImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactImportView.swift; sourceTree = "<group>"; };
+		96BF2D592F1D8DD8001E4E1F /* ContactListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactListView.swift; sourceTree = "<group>"; };
+		96BF2D5B2F1D8DD8001E4E1F /* ContactDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDetailView.swift; sourceTree = "<group>"; };
+		ADCEB2086C204EA088E48C82 /* OnboardingAnswer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingAnswer.swift; sourceTree = "<group>"; };
+		F5E70FB42E6C434591126596 /* PeeplyUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeeplyUser.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		96BF2D262F1D8DD3001E4E1F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		96BF2D362F1D8DD7001E4E1F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		96BF2D402F1D8DD7001E4E1F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		6D607B2B4AFF4EEEA4DCC0E9 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				59694B8BCB74497E8FF1CF97 /* SubscriptionTier.swift */,
+				F5E70FB42E6C434591126596 /* PeeplyUser.swift */,
+				ADCEB2086C204EA088E48C82 /* OnboardingAnswer.swift */,
+				8960151314CC427D912EFE30 /* Contact.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		96BF2D202F1D8DD3001E4E1F = {
+			isa = PBXGroup;
+			children = (
+				96BF2D2B2F1D8DD3001E4E1F /* Peeply */,
+				96BF2D3C2F1D8DD7001E4E1F /* PeeplyTests */,
+				96BF2D462F1D8DD7001E4E1F /* PeeplyUITests */,
+				96BF2D2A2F1D8DD3001E4E1F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		96BF2D2A2F1D8DD3001E4E1F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				96BF2D292F1D8DD3001E4E1F /* Peeply.app */,
+				96BF2D392F1D8DD7001E4E1F /* PeeplyTests.xctest */,
+				96BF2D432F1D8DD7001E4E1F /* PeeplyUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		96BF2D2B2F1D8DD3001E4E1F /* Peeply */ = {
+			isa = PBXGroup;
+			children = (
+				96992AD22F3270FA002914BC /* PersonOfTheDayView.swift */,
+				962C1A102F463752002A20B2 /* PrivacyPolicyView.swift */,
+				962C1A0C2F46297B002A20B2 /* SupportView.swift */,
+				962C1A122F46376D002A20B2 /* TermsOfServiceView.swift */,
+				96992AD02F3270F1002914BC /* PersonOfTheDayManager.swift */,
+				962C1A0E2F463498002A20B2 /* AboutView.swift */,
+				96992ACE2F2E5F31002914BC /* StreakManager.swift */,
+				96992ACC2F2C4B36002914BC /* SplashView.swift */,
+				96992ACA2F26AC88002914BC /* PeeplyColors.swift */,
+				96992AC92F26A227002914BC /* Peeply.entitlements */,
+				96BF2D2C2F1D8DD3001E4E1F /* PeeplyApp.swift */,
+				96BF2D4F2F1D8DD8001E4E1F /* RootView.swift */,
+				96BF2D512F1D8DD8001E4E1F /* AppRoute.swift */,
+				6D607B2B4AFF4EEEA4DCC0E9 /* Models */,
+				96BF2D532F1D8DD8001E4E1F /* PlanSelectionView.swift */,
+				96BF2D552F1D8DD8001E4E1F /* OnboardingView.swift */,
+				96BF2D572F1D8DD8001E4E1F /* ContactImportView.swift */,
+				96BF2D592F1D8DD8001E4E1F /* ContactListView.swift */,
+				96BF2D5B2F1D8DD8001E4E1F /* ContactDetailView.swift */,
+				96BF2D2E2F1D8DD3001E4E1F /* ContentView.swift */,
+				96BF2D302F1D8DD6001E4E1F /* Assets */,
+				96BF2D322F1D8DD6001E4E1F /* Preview Content */,
+			);
+			path = Peeply;
+			sourceTree = "<group>";
+		};
+		96BF2D322F1D8DD6001E4E1F /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				96BF2D332F1D8DD6001E4E1F /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		96BF2D3C2F1D8DD7001E4E1F /* PeeplyTests */ = {
+			isa = PBXGroup;
+			children = (
+				96BF2D3D2F1D8DD7001E4E1F /* PeeplyTests.swift */,
+			);
+			path = PeeplyTests;
+			sourceTree = "<group>";
+		};
+		96BF2D462F1D8DD7001E4E1F /* PeeplyUITests */ = {
+			isa = PBXGroup;
+			children = (
+				96BF2D472F1D8DD7001E4E1F /* PeeplyUITests.swift */,
+				96BF2D492F1D8DD7001E4E1F /* PeeplyUITestsLaunchTests.swift */,
+			);
+			path = PeeplyUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		96BF2D282F1D8DD3001E4E1F /* Peeply */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 96BF2D4D2F1D8DD7001E4E1F /* Build configuration list for PBXNativeTarget "Peeply" */;
+			buildPhases = (
+				96BF2D252F1D8DD3001E4E1F /* Sources */,
+				96BF2D262F1D8DD3001E4E1F /* Frameworks */,
+				96BF2D272F1D8DD3001E4E1F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Peeply;
+			productName = Peeply;
+			productReference = 96BF2D292F1D8DD3001E4E1F /* Peeply.app */;
+			productType = "com.apple.product-type.application";
+		};
+		96BF2D382F1D8DD7001E4E1F /* PeeplyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 96BF2D502F1D8DD7001E4E1F /* Build configuration list for PBXNativeTarget "PeeplyTests" */;
+			buildPhases = (
+				96BF2D352F1D8DD7001E4E1F /* Sources */,
+				96BF2D362F1D8DD7001E4E1F /* Frameworks */,
+				96BF2D372F1D8DD7001E4E1F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				96BF2D3B2F1D8DD7001E4E1F /* PBXTargetDependency */,
+			);
+			name = PeeplyTests;
+			productName = PeeplyTests;
+			productReference = 96BF2D392F1D8DD7001E4E1F /* PeeplyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		96BF2D422F1D8DD7001E4E1F /* PeeplyUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 96BF2D532F1D8DD7001E4E1F /* Build configuration list for PBXNativeTarget "PeeplyUITests" */;
+			buildPhases = (
+				96BF2D3F2F1D8DD7001E4E1F /* Sources */,
+				96BF2D402F1D8DD7001E4E1F /* Frameworks */,
+				96BF2D412F1D8DD7001E4E1F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				96BF2D452F1D8DD7001E4E1F /* PBXTargetDependency */,
+			);
+			name = PeeplyUITests;
+			productName = PeeplyUITests;
+			productReference = 96BF2D432F1D8DD7001E4E1F /* PeeplyUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		96BF2D212F1D8DD3001E4E1F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1540;
+				LastUpgradeCheck = 1540;
+				TargetAttributes = {
+					96BF2D282F1D8DD3001E4E1F = {
+						CreatedOnToolsVersion = 15.4;
+					};
+					96BF2D382F1D8DD7001E4E1F = {
+						CreatedOnToolsVersion = 15.4;
+						TestTargetID = 96BF2D282F1D8DD3001E4E1F;
+					};
+					96BF2D422F1D8DD7001E4E1F = {
+						CreatedOnToolsVersion = 15.4;
+						TestTargetID = 96BF2D282F1D8DD3001E4E1F;
+					};
+				};
+			};
+			buildConfigurationList = 96BF2D242F1D8DD3001E4E1F /* Build configuration list for PBXProject "Peeply" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 96BF2D202F1D8DD3001E4E1F;
+			productRefGroup = 96BF2D2A2F1D8DD3001E4E1F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				96BF2D282F1D8DD3001E4E1F /* Peeply */,
+				96BF2D382F1D8DD7001E4E1F /* PeeplyTests */,
+				96BF2D422F1D8DD7001E4E1F /* PeeplyUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		96BF2D272F1D8DD3001E4E1F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				96BF2D342F1D8DD6001E4E1F /* Preview Assets.xcassets in Resources */,
+				96BF2D312F1D8DD6001E4E1F /* Assets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		96BF2D372F1D8DD7001E4E1F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		96BF2D412F1D8DD7001E4E1F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		96BF2D252F1D8DD3001E4E1F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				96992ACB2F26AC88002914BC /* PeeplyColors.swift in Sources */,
+				962C1A132F46376E002A20B2 /* TermsOfServiceView.swift in Sources */,
+				96BF2D2F2F1D8DD3001E4E1F /* ContentView.swift in Sources */,
+				96992ACD2F2C4B36002914BC /* SplashView.swift in Sources */,
+				96992ACF2F2E5F31002914BC /* StreakManager.swift in Sources */,
+				962C1A0F2F463498002A20B2 /* AboutView.swift in Sources */,
+				96BF2D2D2F1D8DD3001E4E1F /* PeeplyApp.swift in Sources */,
+				96BF2D502F1D8DD8001E4E1F /* RootView.swift in Sources */,
+				96992AD12F3270F2002914BC /* PersonOfTheDayManager.swift in Sources */,
+				96BF2D522F1D8DD8001E4E1F /* AppRoute.swift in Sources */,
+				96BF2D542F1D8DD8001E4E1F /* PlanSelectionView.swift in Sources */,
+				962C1A0D2F46297C002A20B2 /* SupportView.swift in Sources */,
+				96BF2D562F1D8DD8001E4E1F /* OnboardingView.swift in Sources */,
+				96BF2D582F1D8DD8001E4E1F /* ContactImportView.swift in Sources */,
+				96BF2D5A2F1D8DD8001E4E1F /* ContactListView.swift in Sources */,
+				96BF2D5C2F1D8DD8001E4E1F /* ContactDetailView.swift in Sources */,
+				962C1A112F463752002A20B2 /* PrivacyPolicyView.swift in Sources */,
+				96992AD32F3270FA002914BC /* PersonOfTheDayView.swift in Sources */,
+				59694B8BCB74497E8FF1CF98 /* SubscriptionTier.swift in Sources */,
+				F5E70FB42E6C434591126597 /* PeeplyUser.swift in Sources */,
+				ADCEB2086C204EA088E48C83 /* OnboardingAnswer.swift in Sources */,
+				8960151314CC427D912EFE31 /* Contact.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		96BF2D352F1D8DD7001E4E1F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				96BF2D3E2F1D8DD7001E4E1F /* PeeplyTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		96BF2D3F2F1D8DD7001E4E1F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				96BF2D482F1D8DD7001E4E1F /* PeeplyUITests.swift in Sources */,
+				96BF2D4A2F1D8DD7001E4E1F /* PeeplyUITestsLaunchTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		96BF2D3B2F1D8DD7001E4E1F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 96BF2D282F1D8DD3001E4E1F /* Peeply */;
+			targetProxy = 96BF2D3A2F1D8DD7001E4E1F /* PBXContainerItemProxy */;
+		};
+		96BF2D452F1D8DD7001E4E1F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 96BF2D282F1D8DD3001E4E1F /* Peeply */;
+			targetProxy = 96BF2D442F1D8DD7001E4E1F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		96BF2D4B2F1D8DD7001E4E1F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		96BF2D4C2F1D8DD7001E4E1F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		96BF2D4E2F1D8DD7001E4E1F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Peeply/Peeply.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Peeply/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSContactsUsageDescription = "Peeply needs access to your contacts to help you build stronger relationships.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jasonlachance.Peeply;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		96BF2D4F2F1D8DD7001E4E1F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Peeply/Peeply.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Peeply/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSContactsUsageDescription = "Peeply needs access to your contacts to help you build stronger relationships.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jasonlachance.Peeply;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		96BF2D512F1D8DD7001E4E1F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jasonlachance.PeeplyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Peeply.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Peeply";
+			};
+			name = Debug;
+		};
+		96BF2D522F1D8DD7001E4E1F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jasonlachance.PeeplyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Peeply.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Peeply";
+			};
+			name = Release;
+		};
+		96BF2D542F1D8DD7001E4E1F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jasonlachance.PeeplyUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Peeply;
+			};
+			name = Debug;
+		};
+		96BF2D552F1D8DD7001E4E1F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jasonlachance.PeeplyUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Peeply;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		96BF2D242F1D8DD3001E4E1F /* Build configuration list for PBXProject "Peeply" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				96BF2D4B2F1D8DD7001E4E1F /* Debug */,
+				96BF2D4C2F1D8DD7001E4E1F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		96BF2D4D2F1D8DD7001E4E1F /* Build configuration list for PBXNativeTarget "Peeply" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				96BF2D4E2F1D8DD7001E4E1F /* Debug */,
+				96BF2D4F2F1D8DD7001E4E1F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		96BF2D502F1D8DD7001E4E1F /* Build configuration list for PBXNativeTarget "PeeplyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				96BF2D512F1D8DD7001E4E1F /* Debug */,
+				96BF2D522F1D8DD7001E4E1F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		96BF2D532F1D8DD7001E4E1F /* Build configuration list for PBXNativeTarget "PeeplyUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				96BF2D542F1D8DD7001E4E1F /* Debug */,
+				96BF2D552F1D8DD7001E4E1F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 96BF2D212F1D8DD3001E4E1F /* Project object */;
+}
