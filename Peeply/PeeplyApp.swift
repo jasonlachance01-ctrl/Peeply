@@ -22,7 +22,7 @@ struct PeeplyApp: App {
         let configuration = ModelConfiguration(
             schema: schema,
             isStoredInMemoryOnly: false,
-            cloudKitDatabase: .automatic
+            cloudKitDatabase: .none
         )
         
         do {

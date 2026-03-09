@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import Contacts
+import UserNotifications
 
 struct ContactImportView: View {
     @Binding var navigationPath: NavigationPath
@@ -17,6 +18,7 @@ struct ContactImportView: View {
     @State private var showImportErrorAlert = false
     @State private var showSuccessMessage = false
     @State private var isImporting = false
+    @State private var showNotificationPrePromptAlert = false
     
     private let contactStore = CNContactStore()
     
@@ -64,9 +66,15 @@ struct ContactImportView: View {
                 allContacts.append(contentsOf: contacts)
             }
             
+            // Fetch existing contacts to avoid duplicates (same first + last name)
+            let existingDescriptor = FetchDescriptor<Contact>()
+            let existingContacts = try modelContext.fetch(existingDescriptor)
+            var existingKeys = Set(existingContacts.map { "\($0.firstName)|\($0.lastName ?? "")" })
+            
             // Loop through all contacts and create Contact models
             var contactsWithPhotos = 0
             var totalContacts = 0
+            var skippedDuplicates = 0
             
             for cnContact in allContacts {
                 let firstName = cnContact.givenName
@@ -74,6 +82,12 @@ struct ContactImportView: View {
                 
                 // Only import contacts that have at least a first name
                 if !firstName.isEmpty {
+                    let duplicateKey = "\(firstName)|\(lastName)"
+                    if existingKeys.contains(duplicateKey) {
+                        skippedDuplicates += 1
+                        continue
+                    }
+                    existingKeys.insert(duplicateKey)
                     totalContacts += 1
                     
                     // Extract phone numbers
@@ -154,20 +168,30 @@ struct ContactImportView: View {
             // Debug: Print summary
             print("=== Contact Import Summary ===")
             print("Total contacts imported: \(totalContacts)")
+            print("Skipped duplicates (same first + last name): \(skippedDuplicates)")
             print("Contacts with photos: \(contactsWithPhotos)")
             print("Contacts without photos: \(totalContacts - contactsWithPhotos)")
             
             // Save all contacts
             try modelContext.save()
             
-            // Mark contacts as imported
+            // Ensure PeeplyUser exists and mark contacts as imported
             if let user = currentUser {
                 user.contactsImported = true
-                try? modelContext.save()
+                user.hasContactedPersonOfTheDay = true
+                user.personOfTheDayDate = Date()
+            } else {
+                let newUser = PeeplyUser(email: "", subscriptionTier: .gettingStarted)
+                newUser.contactsImported = true
+                newUser.hasContactedPersonOfTheDay = true
+                newUser.personOfTheDayDate = Date()
+                modelContext.insert(newUser)
             }
+            try modelContext.save()
             
             isImporting = false
             showSuccessMessage = true
+            showNotificationPrePromptAlert = true
         } catch {
             isImporting = false
             showImportErrorAlert = true
@@ -187,6 +211,9 @@ struct ContactImportView: View {
                 importView
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.peeplyBackground)
+        .ignoresSafeArea()
         .navigationTitle("Contact Import")
         .navigationBarTitleDisplayMode(.inline)
         .alert("Contacts Permission Required", isPresented: $showPermissionDeniedAlert) {
@@ -198,6 +225,18 @@ struct ContactImportView: View {
             Button("OK", role: .cancel) { }
         } message: {
             Text("Failed to import contacts. Please try again.")
+        }
+        .alert("Enable Notifications", isPresented: $showNotificationPrePromptAlert) {
+            Button("Continue") {
+                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, _ in
+                    if granted {
+                        PersonOfTheDayManager.schedulePersonOfTheDayNotification()
+                    }
+                }
+            }
+            Button("Skip", role: .cancel) { }
+        } message: {
+            Text("Peeply selects a Person of the Day for you each morning to help you stay consistent in your connections. Tap Continue to enable your notifications and never miss a Person of the Day!")
         }
     }
     
@@ -237,13 +276,8 @@ struct ContactImportView: View {
     
     private var successView: some View {
         ZStack {
-            // Background gradient
-            LinearGradient(
-                colors: [Color.peeplyCream, Color.peeplyWhite],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            Color.peeplyBackground
+                .ignoresSafeArea()
             
             VStack(spacing: 0) {
                 // Success confirmation message

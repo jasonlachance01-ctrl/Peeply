@@ -19,21 +19,8 @@ struct RootView: View {
     }
     
     private var rootView: AppRoute {
-        guard let user = currentUser else {
-            // First-time user - start at splash
-            return .splash
-        }
-        
-        if user.contactsImported {
-            // Returning user who completed setup - SplashView will handle Person of the Day and routing
-            return .splash
-        } else if user.onboardingCompleted {
-            // User completed onboarding but hasn't imported contacts
-            return .contactImport
-        } else {
-            // User started but didn't complete onboarding - resume at plan selection
-            return .planSelection
-        }
+        // Always start at splash. SplashView handles routing: Person of the Day for returning users, welcome for new users.
+        return .splash
     }
     
     var body: some View {
@@ -44,8 +31,8 @@ struct RootView: View {
                 }
         }
         .onAppear {
-            // Update Person of the Day when app opens
-            if let user = currentUser {
+            // Update Person of the Day when app opens (returning user only)
+            if let user = currentUser, user.contactsImported {
                 PersonOfTheDayManager.updatePersonOfTheDay(for: user, contacts: contacts, in: modelContext)
             }
         }

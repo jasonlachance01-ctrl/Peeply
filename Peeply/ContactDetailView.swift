@@ -10,6 +10,17 @@ import SwiftData
 import UIKit
 import MapKit
 import CoreLocation
+import PhotosUI
+
+// Transferable type for loading image data from PhotosPicker
+private struct ImageDataTransfer: Transferable {
+    let data: Data
+    static var transferRepresentation: some TransferRepresentation {
+        DataRepresentation(importedContentType: .image) { data in
+            ImageDataTransfer(data: data)
+        }
+    }
+}
 
 // Helper struct for stable ForEach identification
 private struct IndexedItem: Identifiable {
@@ -438,6 +449,8 @@ struct ContactDetailView: View {
                 socialMediaRow(platform: "Twitter/X")
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(Color.peeplyBackground)
         .navigationTitle(fullName)
         .navigationBarTitleDisplayMode(.large)
         .overlay {
@@ -614,6 +627,8 @@ struct EditContactSheet: View {
     @State private var editingEmailIndex: Int?
     @State private var editingEmail = ""
     @State private var notes: String = ""
+    @State private var selectedPhotoItem: PhotosPickerItem?
+    @State private var displayPhotoData: Data?
     
     init(contact: Contact, onSave: @escaping () -> Void, onCancel: @escaping () -> Void) {
         self.contact = contact
@@ -641,6 +656,10 @@ struct EditContactSheet: View {
         contact.jobTitle = jobTitle.trimmingCharacters(in: .whitespaces).isEmpty ? nil : jobTitle.trimmingCharacters(in: .whitespaces)
         contact.birthday = birthday
         
+        if let photoData = displayPhotoData {
+            contact.photoData = photoData
+        }
+        
         // Save phone numbers (filter out empty ones)
         contact.phoneNumbers = phoneNumbers
             .map { $0.trimmingCharacters(in: .whitespaces) }
@@ -656,6 +675,30 @@ struct EditContactSheet: View {
         contact.notes = trimmedNotes.isEmpty ? nil : trimmedNotes
         
         onSave()
+    }
+    
+    private var editSheetPhotoOrInitials: some View {
+        let data = displayPhotoData ?? contact.photoData
+        let initialsText = "\(firstName.prefix(1).uppercased())\(lastName.prefix(1).uppercased())"
+        return Group {
+            if let data = data, let uiImage = UIImage(data: data) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 80, height: 80)
+                    .clipShape(Circle())
+            } else {
+                Circle()
+                    .fill(Color(.systemGray5))
+                    .frame(width: 80, height: 80)
+                    .overlay(
+                        Text(initialsText.isEmpty ? "?" : initialsText)
+                            .font(.title)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.secondary)
+                    )
+            }
+        }
     }
     
     private func deletePhoneNumber(at offsets: IndexSet) {
@@ -731,6 +774,36 @@ struct EditContactSheet: View {
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    PhotosPicker(
+                        selection: $selectedPhotoItem,
+                        matching: .images,
+                        photoLibrary: .shared()
+                    ) {
+                        HStack {
+                            Spacer()
+                            editSheetPhotoOrInitials
+                            Spacer()
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                    }
+                    .buttonStyle(.plain)
+                    .onChange(of: selectedPhotoItem) { _, newItem in
+                        Task {
+                            guard let newItem = newItem,
+                                  let imageData = try? await newItem.loadTransferable(type: ImageDataTransfer.self) else { return }
+                            await MainActor.run {
+                                displayPhotoData = imageData.data
+                            }
+                        }
+                    }
+                } header: {
+                    Text("Photo")
+                } footer: {
+                    Text("Tap to choose a photo from your library.")
+                }
+                
                 Section("Name") {
                     TextField("First Name", text: $firstName)
                         .textContentType(.givenName)

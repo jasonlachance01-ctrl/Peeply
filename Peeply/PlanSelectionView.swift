@@ -14,59 +14,63 @@ struct PlanSelectionView: View {
     @State private var showConfirmationAlert = false
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                // Screen title
-                Text("Choose your Peeply Plan")
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .foregroundStyle(Color.peeplyCharcoal)
-                    .padding(.top, 32)
-                    .padding(.bottom, 24)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                
-                // Plan cards
-                VStack(spacing: 16) {
-                    PlanCard(
-                        planName: "Getting Started",
-                        price: "$10",
-                        billingPeriod: "month",
-                        showCancelAnytime: true,
-                        isMostPopular: false
-                    ) {
-                        selectedPlanName = "Getting Started"
-                        selectedPlanPrice = "$10/month"
-                        showConfirmationAlert = true
+        ZStack {
+            Color.peeplyBackground
+                .ignoresSafeArea()
+            ScrollView {
+                VStack(spacing: 0) {
+                    // Screen title
+                    Text("Choose your Peeply Plan")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .foregroundStyle(Color.peeplyCharcoal)
+                        .padding(.top, 32)
+                        .padding(.bottom, 24)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    // Plan cards
+                    VStack(spacing: 16) {
+                        PlanCard(
+                            planName: "Getting Started",
+                            price: "$10",
+                            billingPeriod: "month",
+                            showCancelAnytime: true,
+                            isMostPopular: false
+                        ) {
+                            selectedPlanName = "Getting Started"
+                            selectedPlanPrice = "$10/month"
+                            showConfirmationAlert = true
+                        }
+                        
+                        PlanCard(
+                            planName: "Most Popular",
+                            price: "$80",
+                            billingPeriod: "year",
+                            showCancelAnytime: true,
+                            isMostPopular: true
+                        ) {
+                            selectedPlanName = "Most Popular"
+                            selectedPlanPrice = "$80/year"
+                            showConfirmationAlert = true
+                        }
+                        
+                        PlanCard(
+                            planName: "Lifetime",
+                            price: "$200",
+                            billingPeriod: "one time",
+                            showCancelAnytime: false,
+                            isMostPopular: false
+                        ) {
+                            selectedPlanName = "Lifetime"
+                            selectedPlanPrice = "$200 one time"
+                            showConfirmationAlert = true
+                        }
                     }
                     
-                    PlanCard(
-                        planName: "Most Popular",
-                        price: "$80",
-                        billingPeriod: "year",
-                        showCancelAnytime: true,
-                        isMostPopular: true
-                    ) {
-                        selectedPlanName = "Most Popular"
-                        selectedPlanPrice = "$80/year"
-                        showConfirmationAlert = true
-                    }
-                    
-                    PlanCard(
-                        planName: "Lifetime",
-                        price: "$200",
-                        billingPeriod: "one time",
-                        showCancelAnytime: false,
-                        isMostPopular: false
-                    ) {
-                        selectedPlanName = "Lifetime"
-                        selectedPlanPrice = "$200 one time"
-                        showConfirmationAlert = true
-                    }
+                    Spacer(minLength: 32)
                 }
-                
-                Spacer(minLength: 32)
+                .padding(.horizontal, 20)
             }
-            .padding(.horizontal, 20)
         }
         .navigationTitle("Plan Selection")
         .navigationBarTitleDisplayMode(.inline)

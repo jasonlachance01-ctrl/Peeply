@@ -25,6 +25,30 @@ struct SplashView: View {
         currentUser?.contactsImported == true
     }
     
+    private func runReturningUserRouting() {
+        if isReturningUser {
+            // Update Person of the Day
+            if let user = currentUser {
+                PersonOfTheDayManager.updatePersonOfTheDay(for: user, contacts: contacts, in: modelContext)
+                
+                // If the user already handled Person of the Day today, go straight to contact list
+                if user.hasContactedPersonOfTheDay {
+                    guard !didRouteReturningUser else { return }
+                    didRouteReturningUser = true
+                    navigationPath.append(AppRoute.contactList)
+                    return
+                }
+                
+                // Otherwise, find and show Person of the Day
+                if let contactId = user.personOfTheDayContactId,
+                   let contact = contacts.first(where: { $0.id == contactId }) {
+                    personOfTheDayContact = contact
+                    showPersonOfTheDay = true
+                }
+            }
+        }
+    }
+    
     var body: some View {
         ZStack {
             // Background
@@ -40,27 +64,10 @@ struct SplashView: View {
             }
         }
         .onAppear {
-            if isReturningUser {
-                // Update Person of the Day
-                if let user = currentUser {
-                    PersonOfTheDayManager.updatePersonOfTheDay(for: user, contacts: contacts, in: modelContext)
-                    
-                    // If the user already handled Person of the Day today, go straight to contact list
-                    if user.hasContactedPersonOfTheDay {
-                        guard !didRouteReturningUser else { return }
-                        didRouteReturningUser = true
-                        navigationPath.append(AppRoute.contactList)
-                        return
-                    }
-                    
-                    // Otherwise, find and show Person of the Day
-                    if let contactId = user.personOfTheDayContactId,
-                       let contact = contacts.first(where: { $0.id == contactId }) {
-                        personOfTheDayContact = contact
-                        showPersonOfTheDay = true
-                    }
-                }
-            }
+            runReturningUserRouting()
+        }
+        .onChange(of: users) { _, _ in
+            runReturningUserRouting()
         }
         .sheet(isPresented: $showPersonOfTheDay) {
             if let contact = personOfTheDayContact {

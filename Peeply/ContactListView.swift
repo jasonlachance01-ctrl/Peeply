@@ -23,7 +23,11 @@ struct ContactListView: View {
     @State private var showStreakDetails = false
     @State private var showStreakCelebration = false
     @State private var showSearch = false
+    @State private var searchText = ""
+    @FocusState private var isSearchFieldFocused: Bool
     @State private var showSupport = false
+    @State private var showNewContactsSheet = false
+    @State private var contactToOpenAfterSheetDismiss: Contact?
     
     private var sortedContacts: [Contact] {
         // Debug: Check for duplicates before sorting
@@ -76,6 +80,15 @@ struct ContactListView: View {
         }
     }
     
+    private var filteredContacts: [Contact] {
+        let query = searchText.trimmingCharacters(in: .whitespaces).lowercased()
+        guard !query.isEmpty else { return sortedContacts }
+        return sortedContacts.filter { contact in
+            contact.firstName.lowercased().contains(query)
+                || (contact.lastName?.lowercased() ?? "").contains(query)
+        }
+    }
+    
     private func fullName(for contact: Contact) -> String {
         if let lastName = contact.lastName, !lastName.isEmpty {
             return "\(contact.firstName) \(lastName)"
@@ -117,14 +130,18 @@ struct ContactListView: View {
     }
     
     private var newContactsThisMonth: Int {
+        contactsCreatedThisMonth.count
+    }
+    
+    private var contactsCreatedThisMonth: [Contact] {
         let calendar = Calendar.current
         let now = Date()
         let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: now)) ?? now
         
-        return contacts.filter { contact in
+        return sortedContacts.filter { contact in
             guard let createdAt = contact.createdAt else { return false }
             return createdAt >= startOfMonth
-        }.count
+        }
     }
     
     private func saveDate() {
@@ -276,7 +293,7 @@ struct ContactListView: View {
                 .foregroundStyle(Color.peeplyCharcoal)
             
             // Descriptive text
-            Text("Contacts Added this Month")
+            Text("New Contacts Added this Month")
                 .font(.system(size: 12, weight: .regular, design: .default))
                 .foregroundStyle(Color.peeplyCharcoal.opacity(0.6))
         }
@@ -342,19 +359,40 @@ struct ContactListView: View {
             .padding(.vertical, 12)
             .background(Color.peeplyWhite)
             
+            // Search bar (shown when Search tab or nav icon is tapped)
+            if showSearch {
+                HStack(spacing: 8) {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundStyle(Color.peeplyCharcoal.opacity(0.6))
+                    TextField("Search contacts", text: $searchText)
+                        .font(.system(size: 16, weight: .regular))
+                        .foregroundStyle(Color.peeplyCharcoal)
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
+                        .focused($isSearchFieldFocused)
+                }
+                .padding(12)
+                .background(Color.peeplyBackground)
+                .padding(.horizontal, 16)
+                .onAppear { isSearchFieldFocused = true }
+            }
+            
             // Content
             ScrollView {
                 VStack(spacing: 12) {
                     // Streak and Growth cards side-by-side
                     HStack(spacing: 12) {
                         streakCard(user: currentUser)
-                        growthTrackingCard
+                        Button(action: { showNewContactsSheet = true }) {
+                            growthTrackingCard
+                        }
+                        .buttonStyle(.plain)
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 12)
                     
                     // Contact list
-                    ForEach(sortedContacts, id: \.id) { contact in
+                    ForEach(filteredContacts, id: \.id) { contact in
                         HStack(spacing: 20) {
                             // Contact photo or initials
                             if let photo = contactPhoto(for: contact) {
@@ -431,38 +469,47 @@ struct ContactListView: View {
         .safeAreaInset(edge: .bottom) {
             // Bottom tab bar
             HStack(spacing: 0) {
-                // Contact List - left
-                Button(action: {}) {
-                    Text("Contact List")
-                        .font(.system(size: 14, weight: .regular, design: .default))
-                        .foregroundStyle(Color.peeplyCharcoal)
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.plain)
-                
-                // Add Contact button - center, larger
-                Button(action: addNewContact) {
-                    ZStack {
-                        Circle()
-                            .fill(Color.peeplyCharcoal)
-                            .frame(width: 56, height: 56)
-                        
-                        Image(systemName: "plus")
-                            .font(.system(size: 24, weight: .medium))
-                            .foregroundStyle(Color.peeplyWhite)
+                // Search - left
+                Button(action: {
+                    showSearch = true
+                    isSearchFieldFocused = true
+                }) {
+                    VStack(spacing: 4) {
+                        Image(systemName: "magnifyingglass")
+                            .font(.system(size: 22, weight: .regular))
+                        Text("Search")
+                            .font(.system(size: 14, weight: .regular, design: .default))
                     }
+                    .foregroundStyle(Color.peeplyCharcoal)
+                    .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.plain)
-                .padding(.horizontal, 20)
                 
-                // Peeply Support - right
+                // Add - center
+                Button(action: addNewContact) {
+                    VStack(spacing: 4) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 32))
+                        Text("Add")
+                            .font(.system(size: 14, weight: .regular, design: .default))
+                    }
+                    .foregroundStyle(Color.peeplyCharcoal)
+                    .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.plain)
+                
+                // Support - right
                 Button(action: {
                     showSupport = true
                 }) {
-                    Text("Peeply Support")
-                        .font(.system(size: 14, weight: .regular, design: .default))
-                        .foregroundStyle(Color.peeplyCharcoal)
-                        .frame(maxWidth: .infinity)
+                    VStack(spacing: 4) {
+                        Image(systemName: "headphones")
+                            .font(.system(size: 22, weight: .regular))
+                        Text("Support")
+                            .font(.system(size: 14, weight: .regular, design: .default))
+                    }
+                    .foregroundStyle(Color.peeplyCharcoal)
+                    .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.plain)
             }
@@ -518,6 +565,38 @@ struct ContactListView: View {
         }
         .sheet(isPresented: $showSupport) {
             SupportView()
+        }
+        .sheet(isPresented: $showNewContactsSheet, onDismiss: {
+            if let c = contactToOpenAfterSheetDismiss {
+                navigationPath.append(AppRoute.contactDetail(c))
+                contactToOpenAfterSheetDismiss = nil
+            }
+        }) {
+            NavigationStack {
+                List(contactsCreatedThisMonth, id: \.id) { contact in
+                    Button(action: {
+                        contactToOpenAfterSheetDismiss = contact
+                        showNewContactsSheet = false
+                    }) {
+                        Text(fullName(for: contact))
+                            .font(.system(size: 16, weight: .regular, design: .default))
+                            .foregroundStyle(Color.peeplyCharcoal)
+                    }
+                }
+                .navigationTitle("New Contacts This Month")
+                .navigationBarTitleDisplayMode(.inline)
+                .scrollContentBackground(.hidden)
+                .background(Color.peeplyBackground)
+                .toolbar {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Done") {
+                            showNewContactsSheet = false
+                        }
+                        .fontWeight(.medium)
+                        .foregroundStyle(Color.peeplyCharcoal)
+                    }
+                }
+            }
         }
     }
 }

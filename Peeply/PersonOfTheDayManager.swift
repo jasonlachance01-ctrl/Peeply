@@ -88,43 +88,24 @@ class PersonOfTheDayManager {
     /// Schedules a daily notification at 3:00 AM for Person of the Day
     static func schedulePersonOfTheDayNotification() {
         let center = UNUserNotificationCenter.current()
-        
-        // Request notification permission
-        center.requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
-            guard granted else {
-                print("Notification permission not granted")
-                return
-            }
-            
-            // Cancel any previously scheduled notification with this identifier
-            center.removePendingNotificationRequests(withIdentifiers: ["personOfTheDay"])
-            
-            // Create notification content
-            let content = UNMutableNotificationContent()
-            content.title = "Your Person of the Day is ready! 🌟"
-            content.body = "Open Peeply to see who to connect with today."
-            content.badge = 1
-            content.sound = .default
-            
-            // Schedule for 3:00 AM daily
-            var dateComponents = DateComponents()
-            dateComponents.hour = 3
-            dateComponents.minute = 0
-            
-            let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-            
-            // Create request
-            let request = UNNotificationRequest(
-                identifier: "personOfTheDay",
-                content: content,
-                trigger: trigger
-            )
-            
-            // Schedule the notification
-            center.add(request) { error in
-                if let error = error {
-                    print("Error scheduling notification: \(error)")
-                }
+        center.removePendingNotificationRequests(withIdentifiers: ["personOfTheDay"])
+        let content = UNMutableNotificationContent()
+        content.title = "Your Person of the Day is ready! 🌟"
+        content.body = "Open Peeply to see who to connect with today."
+        content.badge = 1
+        content.sound = .default
+        var dateComponents = DateComponents()
+        dateComponents.hour = 3
+        dateComponents.minute = 0
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+        let request = UNNotificationRequest(
+            identifier: "personOfTheDay",
+            content: content,
+            trigger: trigger
+        )
+        center.add(request) { error in
+            if let error = error {
+                print("Error scheduling notification: \(error)")
             }
         }
     }

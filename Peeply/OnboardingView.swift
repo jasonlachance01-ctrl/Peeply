@@ -63,10 +63,14 @@ struct OnboardingView: View {
     }
     
     var body: some View {
-        if showWelcome {
-            welcomeView
-        } else {
-            questionView
+        ZStack {
+            Color.peeplyBackground
+                .ignoresSafeArea()
+            if showWelcome {
+                welcomeView
+            } else {
+                questionView
+            }
         }
     }
     

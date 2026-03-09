@@ -59,13 +59,8 @@ struct PersonOfTheDayView: View {
     
     var body: some View {
         ZStack {
-            // Background gradient
-            LinearGradient(
-                colors: [Color.peeplyCream, Color.peeplyRose.opacity(0.3), Color.peeplyLavender.opacity(0.2)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            Color.peeplyBackground
+                .ignoresSafeArea()
             
             VStack(spacing: 0) {
                 // Dismiss button (top-right)

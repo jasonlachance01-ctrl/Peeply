@@ -26,7 +26,7 @@ struct SupportView: View {
             List {
             // Contact Support
             Button(action: {
-                if let url = URL(string: "mailto:support@peeply.app") {
+                if let url = URL(string: "mailto:support@peeplyapp.com") {
                     openURL(url)
                 }
             }) {
@@ -121,6 +121,15 @@ struct SupportView: View {
             .scrollContentBackground(.hidden)
             .navigationTitle("Support")
             .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 18, weight: .medium))
+                            .foregroundStyle(Color.peeplyCharcoal)
+                    }
+                }
+            }
             .navigationDestination(for: AppRoute.self) { route in
                 destinationView(for: route)
             }
