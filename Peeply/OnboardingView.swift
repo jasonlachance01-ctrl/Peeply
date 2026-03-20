@@ -76,9 +76,7 @@ struct OnboardingView: View {
     
     private var welcomeView: some View {
         VStack(spacing: 0) {
-            Spacer()
-            
-            // Welcome content
+            // Welcome content - top third of page
             VStack(spacing: 32) {
                 // Large SF Symbol icon
                 Image(systemName: "person.2.circle.fill")
@@ -92,13 +90,16 @@ struct OnboardingView: View {
                     )
                 
                 // Welcome text
-                Text("Welcome to Peeply! Your Personal Relationship Command Center! We want to get to know you first so we can customize your experience.")
+                Text("We want to get to know you first to customize your experience!")
                     .font(.title)
                     .fontWeight(.bold)
-                    .foregroundStyle(Color.peeplyCharcoal)
+                    .foregroundStyle(Color(red: 250/255, green: 172/255, blue: 167/255))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
             }
+            .padding(.top, 56)
+            .frame(maxWidth: .infinity)
+            .frame(maxHeight: .infinity, alignment: .top)
             
             Spacer()
             

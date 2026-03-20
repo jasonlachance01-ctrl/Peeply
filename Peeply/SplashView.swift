@@ -176,27 +176,6 @@ struct SplashView: View {
             }
             .padding(.bottom, 48)
             
-            // Step indicators - Apple iOS style
-            HStack(spacing: 0) {
-                stepIndicator(number: 1, text: "Choose Plan")
-                
-                // Connecting line
-                Spacer()
-                connectingLine()
-                Spacer()
-                
-                stepIndicator(number: 2, text: "Onboarding")
-                
-                // Connecting line
-                Spacer()
-                connectingLine()
-                Spacer()
-                
-                stepIndicator(number: 3, text: "Start Using Peeply")
-            }
-            .padding(.horizontal, 24)
-            .padding(.bottom, 48)
-            
             Spacer()
             
             // Get Started button
@@ -214,59 +193,6 @@ struct SplashView: View {
             .padding(.horizontal, 32)
             .padding(.bottom, 48)
         }
-    }
-    
-    private func stepIndicator(number: Int, text: String) -> some View {
-        VStack(spacing: 8) {
-            // Numbered circle badge
-            ZStack {
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [Color.peeplyRose.opacity(0.2), Color.peeplyLavender.opacity(0.2)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: 44, height: 44)
-                
-                Circle()
-                    .stroke(
-                        LinearGradient(
-                            colors: [Color.peeplyRose, Color.peeplyLavender],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 2
-                    )
-                    .frame(width: 44, height: 44)
-                
-                Text("\(number)")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(Color.peeplyCharcoal)
-            }
-            
-            // Step text
-            Text(text)
-                .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(Color.peeplyCharcoal.opacity(0.8))
-                .multilineTextAlignment(.center)
-                .lineLimit(2)
-                .frame(width: 70)
-        }
-    }
-    
-    private func connectingLine() -> some View {
-        Capsule()
-            .fill(
-                LinearGradient(
-                    colors: [Color.peeplyRose.opacity(0.3), Color.peeplyLavender.opacity(0.3)],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            )
-            .frame(height: 2)
-            .frame(maxWidth: 20)
     }
     
     // Diverse face variations for different ages and styles
