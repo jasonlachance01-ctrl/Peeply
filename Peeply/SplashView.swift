@@ -16,6 +16,7 @@ struct SplashView: View {
     @State private var showPersonOfTheDay = false
     @State private var personOfTheDayContact: Contact?
     @State private var didRouteReturningUser = false
+    @State private var showAuth = false
     
     private var currentUser: PeeplyUser? {
         users.first
@@ -117,39 +118,76 @@ struct SplashView: View {
         VStack(spacing: 0) {
             Spacer()
 
-            VStack(spacing: 16) {
-                Text("Welcome to Peeply!")
-                    .font(.system(size: 36, weight: .bold, design: .default))
-                    .foregroundStyle(Color.peeplyWhite)
-                    .minimumScaleFactor(0.8)
-                    .lineLimit(1)
-                    .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
+            Group {
+                if !showAuth {
+                    VStack(spacing: 0) {
+                        VStack(spacing: 16) {
+                            Text("Welcome to Peeply!")
+                                .font(.system(size: 36, weight: .bold, design: .default))
+                                .foregroundStyle(Color.peeplyWhite)
+                                .minimumScaleFactor(0.8)
+                                .lineLimit(1)
+                                .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
 
-                Text("Your Personal Relationship Command Center!")
-                    .font(.title3)
-                    .fontWeight(.medium)
-                    .foregroundStyle(Color.peeplyWhite.opacity(0.9))
-                    .multilineTextAlignment(.center)
-                    .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
-            }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 48)
+                            Text("Your Personal Relationship Command Center!")
+                                .font(.title3)
+                                .fontWeight(.medium)
+                                .foregroundStyle(Color.peeplyWhite.opacity(0.9))
+                                .multilineTextAlignment(.center)
+                                .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 48)
 
-            Button(action: {
-                navigationPath.append(AppRoute.planSelection)
-            }) {
-                Text("Get Started")
-                    .font(.headline)
-                    .foregroundStyle(Color.peeplyCharcoal)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 50)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.peeplyWhite)
-                    )
+                        Button(action: {
+                            withAnimation(.spring()) { showAuth = true }
+                        }) {
+                            Text("Get Started")
+                                .font(.headline)
+                                .foregroundStyle(Color.peeplyCharcoal)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 50)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .fill(Color.peeplyWhite)
+                                )
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 48)
+                    }
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                } else {
+                    VStack(spacing: 16) {
+                        Button(action: {}) {
+                            Text("Sign in with Apple")
+                                .font(.headline)
+                                .foregroundStyle(Color.peeplyCharcoal)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 50)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .fill(Color.peeplyWhite)
+                                )
+                        }
+
+                        Button(action: {}) {
+                            Text("Sign in with Google")
+                                .font(.headline)
+                                .foregroundStyle(Color.peeplyCharcoal)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 50)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .fill(Color.peeplyWhite)
+                                )
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 48)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 48)
+            .animation(.spring(), value: showAuth)
         }
         .background {
             ZStack {
