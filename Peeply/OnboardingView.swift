@@ -6,12 +6,19 @@
 //
 
 import SwiftUI
+import SwiftData
 import UIKit
 
 struct OnboardingView: View {
     @Binding var navigationPath: NavigationPath
+    @Query private var users: [PeeplyUser]
+    @Environment(\.modelContext) private var modelContext
     @State private var showWelcome = true
     @State private var currentQuestionIndex = 0
+    
+    private var currentUser: PeeplyUser? {
+        users.first
+    }
     
     private let questions = [
         "Question 1",
@@ -35,6 +42,11 @@ struct OnboardingView: View {
     }
     
     private func startQuestions() {
+        if currentUser == nil {
+            let newUser = PeeplyUser(email: "", subscriptionTier: .gettingStarted)
+            modelContext.insert(newUser)
+            try? modelContext.save()
+        }
         showWelcome = false
     }
     
@@ -59,7 +71,9 @@ struct OnboardingView: View {
     }
     
     private func navigateToContactImport() {
-        navigationPath.append(AppRoute.contactImport)
+        currentUser?.onboardingCompleted = true
+        try? modelContext.save()
+        navigationPath.append(AppRoute.planSelection)
     }
     
     var body: some View {

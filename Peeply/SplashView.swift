@@ -16,7 +16,6 @@ struct SplashView: View {
     @State private var showPersonOfTheDay = false
     @State private var personOfTheDayContact: Contact?
     @State private var didRouteReturningUser = false
-    @State private var showAuth = false
     
     private var currentUser: PeeplyUser? {
         users.first
@@ -27,26 +26,34 @@ struct SplashView: View {
     }
     
     private func runReturningUserRouting() {
-        if isReturningUser {
-            // Update Person of the Day
-            if let user = currentUser {
-                PersonOfTheDayManager.updatePersonOfTheDay(for: user, contacts: contacts, in: modelContext)
-                
-                // If the user already handled Person of the Day today, go straight to contact list
-                if user.hasContactedPersonOfTheDay {
-                    guard !didRouteReturningUser else { return }
-                    didRouteReturningUser = true
-                    navigationPath.append(AppRoute.contactList)
-                    return
-                }
-                
-                // Otherwise, find and show Person of the Day
-                if let contactId = user.personOfTheDayContactId,
-                   let contact = contacts.first(where: { $0.id == contactId }) {
-                    personOfTheDayContact = contact
-                    showPersonOfTheDay = true
+        if currentUser == nil { return }
+        if currentUser?.contactsImported == true {
+            if isReturningUser {
+                // Update Person of the Day
+                if let user = currentUser {
+                    PersonOfTheDayManager.updatePersonOfTheDay(for: user, contacts: contacts, in: modelContext)
+                    
+                    // If the user already handled Person of the Day today, go straight to contact list
+                    if user.hasContactedPersonOfTheDay {
+                        guard !didRouteReturningUser else { return }
+                        didRouteReturningUser = true
+                        navigationPath.append(AppRoute.contactList)
+                        return
+                    }
+                    
+                    // Otherwise, find and show Person of the Day
+                    if let contactId = user.personOfTheDayContactId,
+                       let contact = contacts.first(where: { $0.id == contactId }) {
+                        personOfTheDayContact = contact
+                        showPersonOfTheDay = true
+                    }
                 }
             }
+        } else if currentUser?.onboardingCompleted == true {
+            navigationPath.append(AppRoute.planSelection)
+        } else if currentUser?.onboardingCompleted == false && currentUser?.contactsImported == false {
+            navigationPath = NavigationPath()
+            navigationPath.append(AppRoute.onboarding)
         }
     }
     
@@ -118,76 +125,41 @@ struct SplashView: View {
         VStack(spacing: 0) {
             Spacer()
 
-            Group {
-                if !showAuth {
-                    VStack(spacing: 0) {
-                        VStack(spacing: 16) {
-                            Text("Welcome to Peeply!")
-                                .font(.system(size: 36, weight: .bold, design: .default))
-                                .foregroundStyle(Color.peeplyWhite)
-                                .minimumScaleFactor(0.8)
-                                .lineLimit(1)
-                                .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
+            VStack(spacing: 0) {
+                VStack(spacing: 16) {
+                    Text("Welcome to Peeply!")
+                        .font(.system(size: 36, weight: .bold, design: .default))
+                        .foregroundStyle(Color.peeplyWhite)
+                        .minimumScaleFactor(0.8)
+                        .lineLimit(1)
+                        .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
 
-                            Text("Your Personal Relationship Command Center!")
-                                .font(.title3)
-                                .fontWeight(.medium)
-                                .foregroundStyle(Color.peeplyWhite.opacity(0.9))
-                                .multilineTextAlignment(.center)
-                                .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.bottom, 48)
-
-                        Button(action: {
-                            withAnimation(.spring()) { showAuth = true }
-                        }) {
-                            Text("Get Started")
-                                .font(.headline)
-                                .foregroundStyle(Color.peeplyCharcoal)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 50)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 16)
-                                        .fill(Color.peeplyWhite)
-                                )
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.bottom, 48)
-                    }
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                } else {
-                    VStack(spacing: 16) {
-                        Button(action: {}) {
-                            Text("Sign in with Apple")
-                                .font(.headline)
-                                .foregroundStyle(Color.peeplyCharcoal)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 50)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 16)
-                                        .fill(Color.peeplyWhite)
-                                )
-                        }
-
-                        Button(action: {}) {
-                            Text("Sign in with Google")
-                                .font(.headline)
-                                .foregroundStyle(Color.peeplyCharcoal)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 50)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 16)
-                                        .fill(Color.peeplyWhite)
-                                )
-                        }
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 48)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    Text("Your Personal Relationship Command Center!")
+                        .font(.title3)
+                        .fontWeight(.medium)
+                        .foregroundStyle(Color.peeplyWhite.opacity(0.9))
+                        .multilineTextAlignment(.center)
+                        .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
                 }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 48)
+
+                Button(action: {
+                    navigationPath.append(AppRoute.onboarding)
+                }) {
+                    Text("Get Started")
+                        .font(.headline)
+                        .foregroundStyle(Color.peeplyCharcoal)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(Color.peeplyWhite)
+                        )
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 48)
             }
-            .animation(.spring(), value: showAuth)
         }
         .background {
             ZStack {
