@@ -74,6 +74,7 @@ struct PlanSelectionView: View {
         }
         .navigationTitle("Plan Selection")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
         .toolbarColorScheme(.light, for: .navigationBar)
         .toolbarBackground(Color.peeplyWhite, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)

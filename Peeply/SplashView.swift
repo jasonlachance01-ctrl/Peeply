@@ -50,6 +50,7 @@ struct SplashView: View {
                 }
             }
         } else if currentUser?.onboardingCompleted == true {
+            navigationPath = NavigationPath()
             navigationPath.append(AppRoute.planSelection)
         } else if currentUser?.onboardingCompleted == false && currentUser?.contactsImported == false {
             navigationPath = NavigationPath()
