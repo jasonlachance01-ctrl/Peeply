@@ -7,9 +7,15 @@
 
 import SwiftUI
 import SwiftData
+import RevenueCat
 
 @main
 struct PeeplyApp: App {
+    init() {
+        // TODO: Replace with live key before App Store submission
+        Purchases.configure(withAPIKey: "test_CZTjKBZxkPtQrIsmAWlFcLZCzXF")
+    }
+    
     var body: some Scene {
         WindowGroup {
             RootView()

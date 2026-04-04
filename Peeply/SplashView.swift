@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import RevenueCat
 
 struct SplashView: View {
     @Binding var navigationPath: NavigationPath
@@ -51,7 +52,27 @@ struct SplashView: View {
             }
         } else if currentUser?.onboardingCompleted == true {
             navigationPath = NavigationPath()
-            navigationPath.append(AppRoute.planSelection)
+            Task {
+                do {
+                    let customerInfo = try await Purchases.shared.customerInfo()
+                    let peeplyProActive = customerInfo.entitlements["Peeply Pro"]?.isActive == true
+                    await MainActor.run {
+                        guard let user = currentUser, user.onboardingCompleted, user.contactsImported == false else {
+                            navigationPath.append(AppRoute.planSelection)
+                            return
+                        }
+                        if peeplyProActive {
+                            navigationPath.append(AppRoute.contactImport)
+                        } else {
+                            navigationPath.append(AppRoute.planSelection)
+                        }
+                    }
+                } catch {
+                    await MainActor.run {
+                        navigationPath.append(AppRoute.planSelection)
+                    }
+                }
+            }
         } else if currentUser?.onboardingCompleted == false && currentUser?.contactsImported == false {
             navigationPath = NavigationPath()
             navigationPath.append(AppRoute.onboarding)
