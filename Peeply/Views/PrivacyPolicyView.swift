@@ -18,7 +18,7 @@ struct PrivacyPolicyView: View {
                     .padding(.top, 20)
                 
                 // Subtitle
-                Text("Last updated: February 2026")
+                Text("Last updated: April 2026")
                     .font(.system(size: 14, weight: .regular, design: .default))
                     .foregroundStyle(Color.peeplyCharcoal.opacity(0.6))
                 
@@ -28,7 +28,7 @@ struct PrivacyPolicyView: View {
                         .font(.system(size: 18, weight: .bold, design: .default))
                         .foregroundStyle(Color.peeplyCharcoal)
                     
-                    Text("Peeply exists for one purpose: to help you maintain meaningful, consistent relationships with the people who matter most in your life. We are not a data company. We do not monetize your information. Your trust is the foundation of everything we build.")
+                    Text("Your Privacy is Our Priority at Peeply, we believe your relationships and your contacts are deeply personal. That's why we've made a deliberate decision to keep your data exactly where it belongs — on your device, not stored in any other place. Peeply exists for one purpose: to help you maintain meaningful, consistent relationships with the people who matter most in your life. We are not a data company. We do not monetize your information. Your trust is the foundation of everything we build. If we serve you well all that we ask is you share Peeply with your friends and contacts.")
                         .font(.system(size: 16, weight: .regular, design: .default))
                         .foregroundStyle(Color.peeplyCharcoal)
                         .lineSpacing(4)
@@ -40,7 +40,7 @@ struct PrivacyPolicyView: View {
                         .font(.system(size: 18, weight: .bold, design: .default))
                         .foregroundStyle(Color.peeplyCharcoal)
                     
-                    Text("Peeply imports the contact information you choose to share from your iOS Contacts, including names, phone numbers, email addresses, and other standard contact fields. Additionally, Peeply stores the \"Last One-to-One\" interaction dates that you manually enter. No other data is collected.")
+                    Text("Peeply requests access to your iOS Contacts for the sole purpose of transferring them into the Peeply app. This import happens on your device, initiated by you, and only when you explicitly grant permission. The information of your contacts is not stored anywhere else.")
                         .font(.system(size: 16, weight: .regular, design: .default))
                         .foregroundStyle(Color.peeplyCharcoal)
                         .lineSpacing(4)
@@ -76,7 +76,7 @@ struct PrivacyPolicyView: View {
                         .font(.system(size: 18, weight: .bold, design: .default))
                         .foregroundStyle(Color.peeplyCharcoal)
                     
-                    Text("Peeply does not share your data with any third parties. We do not use advertising networks, analytics SDKs, or data brokers. The only external service your data may touch is your personal iCloud account, governed by Apple's own privacy policy, if you choose to enable iCloud sync.")
+                    Text("Peeply does not share your personal contact data with any third parties. We do not use advertising networks or data brokers. Peeply uses RevenueCat to process in-app purchases. RevenueCat receives only anonymous purchase data including transaction history and an anonymous device identifier. Your contacts, relationship data, and personal information are never shared with RevenueCat or any other third party. You can review RevenueCat's privacy policy at revenuecat.com/privacy.")
                         .font(.system(size: 16, weight: .regular, design: .default))
                         .foregroundStyle(Color.peeplyCharcoal)
                         .lineSpacing(4)
@@ -100,7 +100,7 @@ struct PrivacyPolicyView: View {
                         .font(.system(size: 18, weight: .bold, design: .default))
                         .foregroundStyle(Color.peeplyCharcoal)
                     
-                    Text("Your data remains in the app until you delete it. You may delete individual contacts at any time. To delete all your data, use the \"Delete Account\" option in the Support tab, which permanently removes all your Peeply data from your device. You may also email us at support@peeply.app to request data deletion.")
+                    Text("Your data remains in the app until you delete it. You may delete individual contacts at any time. To delete all your data, use the \"Delete Account\" option in the Support tab, which permanently removes all your Peeply data from your device. You may also email us at support@peeplyapp.com to request data deletion.")
                         .font(.system(size: 16, weight: .regular, design: .default))
                         .foregroundStyle(Color.peeplyCharcoal)
                         .lineSpacing(4)
@@ -148,7 +148,7 @@ struct PrivacyPolicyView: View {
                         .font(.system(size: 18, weight: .bold, design: .default))
                         .foregroundStyle(Color.peeplyCharcoal)
                     
-                    Text("Questions or data deletion requests: support@peeply.app")
+                    Text("Questions or data deletion requests: support@peeplyapp.com")
                         .font(.system(size: 16, weight: .regular, design: .default))
                         .foregroundStyle(Color.peeplyCharcoal)
                         .lineSpacing(4)
