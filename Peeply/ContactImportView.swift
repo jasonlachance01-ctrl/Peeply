@@ -292,7 +292,7 @@ struct ContactImportView: View {
                             )
                         )
                     
-                    Text("Your contacts successfully uploaded to Peeply!")
+                    Text("Your contacts successfully imported to Peeply. You can now use Peeply just as you have always used your device contacts list. Add new contacts, Search for Contacts, Edit Contact information, Call, Text, or Email. Do it all and more with Peeply!")
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundStyle(Color.peeplyCharcoal)
@@ -302,51 +302,17 @@ struct ContactImportView: View {
                 .padding(.top, 40)
                 .padding(.bottom, 32)
                 
-                // Feature cards - swipeable
-                VStack(spacing: 16) {
-                    Text("What Peeply Does")
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(Color.peeplyCharcoal)
-                        .padding(.bottom, 8)
-                    
-                    TabView {
-                        featureCard(
-                            icon: "calendar",
-                            title: "Last One-to-One",
-                            description: "Track your last meaningful conversation"
-                        )
-                        featureCard(
-                            icon: "person.badge.plus",
-                            title: "Quick Entry",
-                            description: "Add contacts in seconds with name and number"
-                        )
-                        featureCard(
-                            icon: "star.fill",
-                            title: "Person of the Day",
-                            description: "Discover who to connect with today"
-                        )
-                        featureCard(
-                            icon: "shuffle",
-                            title: "Randomizer",
-                            description: "Shake for 5 connection suggestions"
-                        )
-                        featureCard(
-                            icon: "flame.fill",
-                            title: "Streaks",
-                            description: "Stay consistent! Update daily to keep your streak alive"
-                        )
-                    }
-                    .tabViewStyle(.page)
-                    .frame(height: 200)
-                }
-                .padding(.horizontal, 20)
+                Text("Important note from Peeply Development Team: Your existing iPhone contacts will now be in Peeply and also remain in your iPhone contacts app. If you delete Peeply, your original contacts remain in your iPhone's contacts but any new contacts you added directly in Peeply will be deleted along with all other app data. iCloud data backup is coming in a future Peeply release — when available, all of your Peeply data will be protected even if you delete and reinstall the app. We will notify all users when that update is available.")
+                    .font(.caption)
+                    .foregroundStyle(Color.peeplyCharcoal.opacity(0.7))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 24)
                 
                 Spacer()
                 
                 // Continue button
                 Button(action: continueToContactList) {
-                    Text("Go to your Contacts and Start using Peeply!")
+                    Text("Go to Your Contacts")
                         .font(.headline)
                         .foregroundStyle(Color.peeplyWhite)
                         .frame(maxWidth: .infinity)

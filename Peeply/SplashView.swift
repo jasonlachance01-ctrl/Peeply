@@ -162,6 +162,12 @@ struct SplashView: View {
                         .foregroundStyle(Color.peeplyWhite.opacity(0.9))
                         .multilineTextAlignment(.center)
                         .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
+
+                    Text("Peeply is a micro-CRM that brings your contacts list to life and helps you focus on developing stronger personal relationships.")
+                        .font(.subheadline)
+                        .foregroundStyle(Color.peeplyWhite.opacity(0.85))
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 48)
