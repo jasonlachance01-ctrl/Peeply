@@ -125,6 +125,10 @@ struct OnboardingView: View {
     }
     
     private func answerQuestion() {
+        if currentQuestion.type == .textEntry {
+            currentUser?.email = emailInput
+            try? modelContext.save()
+        }
         if isLastQuestion {
             navigateToContactImport()
         } else {
