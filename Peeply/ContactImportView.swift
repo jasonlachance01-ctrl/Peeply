@@ -214,12 +214,13 @@ struct ContactImportView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.peeplyBackground)
         .ignoresSafeArea()
-        .navigationTitle("Contact Import")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
         .alert("Contacts Permission Required", isPresented: $showPermissionDeniedAlert) {
             Button("OK", role: .cancel) { }
         } message: {
-            Text("Peeply needs access to your contacts to help you build stronger relationships. Please enable contacts access in Settings.")
+            Text("Import your contacts into Peeply.")
         }
         .alert("Import Error", isPresented: $showImportErrorAlert) {
             Button("OK", role: .cancel) { }
@@ -246,7 +247,7 @@ struct ContactImportView: View {
             
             // Headline
             Text("Onboarding complete! Now let's import your contacts so Peeply can begin to help you build strong relationships!")
-                .font(.title2)
+                .font(.title3)
                 .fontWeight(.semibold)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
@@ -254,24 +255,27 @@ struct ContactImportView: View {
             
             // Import Contacts button
             Button(action: requestContactsPermission) {
-                if isImporting {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 50)
-                } else {
-                    Text("Import Contacts")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 50)
+                Group {
+                    if isImporting {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    } else {
+                        Text("Import Contacts")
+                            .font(.headline)
+                            .foregroundStyle(Color.white)
+                    }
                 }
+                .frame(maxWidth: .infinity)
+                .frame(height: 50)
+                .background(Color.peeplyPink)
+                .cornerRadius(16)
             }
-            .buttonStyle(.borderedProminent)
             .disabled(isImporting)
             .padding(.horizontal, 20)
             
             Spacer()
         }
+        .background(Color.white)
     }
     
     private var successView: some View {

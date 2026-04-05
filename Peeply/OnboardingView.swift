@@ -79,17 +79,17 @@ struct OnboardingView: View {
         ),
         OnboardingQuestion(
             id: 7,
-            question: "How many NEW people do you meet in an average month? Truly new people who you did not know before.",
+            question: "How many NEW people do you meet in an average month? Truly new people whom you did not know before.",
             subtitle: nil,
             type: .multipleChoice,
             answers: ["0–1", "2–5", "6–10", "More than 10"]
         ),
         OnboardingQuestion(
             id: 8,
-            question: "Think of the 5 people who matter most to you. When did you last reach out to each of them — just to connect, not for a reason?",
+            question: "Think of the 5 people who matter most to you. When did you last reach out to each of them — just to connect, not for a reason.",
             subtitle: nil,
             type: .multipleChoice,
-            answers: ["Within the last week", "Within the last month", "It's been too long", "I honestly can't remember"]
+            answers: ["Within the last week", "Within the last month", "I honestly can't remember"]
         ),
         OnboardingQuestion(
             id: 9,
@@ -157,7 +157,7 @@ struct OnboardingView: View {
     
     var body: some View {
         ZStack {
-            Color.peeplyBackground
+            Color.white
                 .ignoresSafeArea()
             if showWelcome {
                 welcomeView
@@ -172,22 +172,11 @@ struct OnboardingView: View {
         VStack(spacing: 0) {
             // Welcome content - top third of page
             VStack(spacing: 32) {
-                // Large SF Symbol icon
-                Image(systemName: "person.2.circle.fill")
-                    .font(.system(size: 90))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [Color.peeplyRose, Color.peeplyLavender],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                
                 // Welcome text
                 Text("We want to get to know you first to customize your experience!")
-                    .font(.title)
+                    .font(.title3)
                     .fontWeight(.bold)
-                    .foregroundStyle(Color(red: 250/255, green: 172/255, blue: 167/255))
+                    .foregroundStyle(Color.black)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
             }
@@ -199,19 +188,17 @@ struct OnboardingView: View {
             
             // Get Started button
             Button(action: startQuestions) {
-                Text("Get Started")
+                Text("Let's Go")
                     .font(.headline)
-                    .foregroundStyle(Color.peeplyWhite)
+                    .foregroundStyle(Color.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 50)
-                    .background(Color.peeplyCharcoal)
+                    .background(Color.peeplyPink)
                     .cornerRadius(16)
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 32)
         }
-        .navigationTitle("Onboarding")
-        .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             // Set navigation title color
             let appearance = UINavigationBarAppearance()
@@ -271,7 +258,7 @@ struct OnboardingView: View {
             } else {
                 // Question text
                 Text(currentQuestion.question)
-                    .font(.title)
+                    .font(.title3)
                     .fontWeight(.semibold)
                     .foregroundStyle(Color.peeplyCharcoal)
                     .multilineTextAlignment(.center)
@@ -288,16 +275,10 @@ struct OnboardingView: View {
                         Button(action: answerQuestion) {
                             Text(answer)
                                 .font(.headline)
-                                .foregroundStyle(Color.peeplyWhite)
+                                .foregroundStyle(Color.white)
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 50)
-                                .background(
-                                    LinearGradient(
-                                        colors: [Color.peeplyRose, Color.peeplyLavender],
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    )
-                                )
+                                .background(Color.peeplyPink)
                                 .cornerRadius(16)
                         }
                     }
@@ -336,19 +317,6 @@ struct OnboardingView: View {
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 32)
-        }
-        .navigationTitle("Onboarding")
-        .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
-            // Set navigation title color
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = UIColor(Color.peeplyWhite)
-            appearance.largeTitleTextAttributes = [.foregroundColor: UIColor(Color.peeplyCharcoal)]
-            appearance.titleTextAttributes = [.foregroundColor: UIColor(Color.peeplyCharcoal)]
-            UINavigationBar.appearance().standardAppearance = appearance
-            UINavigationBar.appearance().scrollEdgeAppearance = appearance
-            UINavigationBar.appearance().compactAppearance = appearance
         }
     }
 }

@@ -45,6 +45,7 @@ struct PlanSelectionView: View {
             .padding(.vertical, 8)
             #endif
         }
+        .navigationBarBackButtonHidden(true)
     }
 }
 
