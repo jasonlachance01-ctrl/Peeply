@@ -69,6 +69,8 @@ struct RootView: View {
             ContactListView(navigationPath: $navigationPath)
         case .contactDetail(let contact):
             ContactDetailView(navigationPath: $navigationPath, contact: contact)
+        case .contactDetailFromRandomizer(let contact):
+            ContactDetailView(navigationPath: $navigationPath, contact: contact)
         case .support:
             SupportView()
         case .about:

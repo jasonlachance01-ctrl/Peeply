@@ -15,6 +15,7 @@ enum AppRoute: Hashable {
     case contactImport
     case contactList
     case contactDetail(Contact)
+    case contactDetailFromRandomizer(Contact)
     case support
     case about
     case privacyPolicy
@@ -33,6 +34,8 @@ enum AppRoute: Hashable {
              (.termsOfService, .termsOfService):
             return true
         case (.contactDetail(let lhsContact), .contactDetail(let rhsContact)):
+            return lhsContact.id == rhsContact.id
+        case (.contactDetailFromRandomizer(let lhsContact), .contactDetailFromRandomizer(let rhsContact)):
             return lhsContact.id == rhsContact.id
         default:
             return false
@@ -53,6 +56,9 @@ enum AppRoute: Hashable {
             hasher.combine(4)
         case .contactDetail(let contact):
             hasher.combine(5)
+            hasher.combine(contact.id)
+        case .contactDetailFromRandomizer(let contact):
+            hasher.combine(10)
             hasher.combine(contact.id)
         case .support:
             hasher.combine(6)

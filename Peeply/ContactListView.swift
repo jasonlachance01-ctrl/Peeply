@@ -206,7 +206,7 @@ struct ContactListView: View {
     
     private func openContactDetail(_ contact: Contact) {
         showRandomizer = false
-        navigationPath.append(AppRoute.contactDetail(contact))
+        navigationPath.append(AppRoute.contactDetailFromRandomizer(contact))
     }
     
     private func addNewContact() {
@@ -646,6 +646,7 @@ struct ContactRandomizerSheet: View {
                     Text("You have activated the Peeply Randomizer! Here are the lucky people who get to hear from you today!")
                         .font(.title2)
                         .fontWeight(.bold)
+                        .foregroundStyle(Color.peeplyPink)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 20)
                 }
@@ -673,12 +674,18 @@ struct ContactRandomizerSheet: View {
                                         .clipShape(Circle())
                                 } else {
                                     Circle()
-                                        .fill(Color(.systemGray5))
+                                        .fill(
+                                            LinearGradient(
+                                                colors: [Color.peeplyRose, Color.peeplyLavender],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            )
+                                        )
                                         .frame(width: 50, height: 50)
                                         .overlay(
                                             Text(initials(for: contact))
                                                 .font(.system(size: 18, weight: .semibold))
-                                                .foregroundStyle(Color.peeplyCharcoal)
+                                                .foregroundStyle(Color.peeplyWhite)
                                         )
                                 }
                                 
@@ -702,6 +709,13 @@ struct ContactRandomizerSheet: View {
                         .buttonStyle(.plain)
                     }
                 }
+                
+                Text("📸 Take a screenshot! Once you close or navigate away from this unique Randomizer list you will not be able to return to it.")
+                    .font(.caption)
+                    .foregroundStyle(Color.peeplyCharcoal.opacity(0.6))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 16)
             }
             .navigationTitle("Contact Randomizer")
             .navigationBarTitleDisplayMode(.inline)
