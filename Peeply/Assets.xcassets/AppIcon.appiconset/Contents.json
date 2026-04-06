@@ -1,6 +1,7 @@
 {
   "images" : [
     {
+      "filename" : "lettermark_v3_white_rich.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"

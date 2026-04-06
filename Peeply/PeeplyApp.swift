@@ -32,7 +32,11 @@ struct PeeplyApp: App {
         )
         
         do {
-            return try ModelContainer(for: schema, configurations: [configuration])
+            return try ModelContainer(
+                for: Schema([Contact.self, PeeplyUser.self, OnboardingAnswer.self]),
+                migrationPlan: PeeplyMigrationPlan.self,
+                configurations: [configuration]
+            )
         } catch let error {
             fatalError("Failed to create model container: \(error.localizedDescription)")
         }
