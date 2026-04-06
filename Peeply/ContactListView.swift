@@ -206,7 +206,7 @@ struct ContactListView: View {
     
     private func openContactDetail(_ contact: Contact) {
         showRandomizer = false
-        navigationPath.append(AppRoute.contactDetailFromRandomizer(contact))
+        navigationPath.append(AppRoute.contactDetail(contact))
     }
     
     private func addNewContact() {
