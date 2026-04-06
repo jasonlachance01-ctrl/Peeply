@@ -220,7 +220,7 @@ struct ContactImportView: View {
         .alert("Contacts Permission Required", isPresented: $showPermissionDeniedAlert) {
             Button("OK", role: .cancel) { }
         } message: {
-            Text("Import your contacts into Peeply.")
+            Text("To import your contacts, go to iPhone Settings > Privacy & Security > Contacts and enable access for Peeply.")
         }
         .alert("Import Error", isPresented: $showImportErrorAlert) {
             Button("OK", role: .cancel) { }
@@ -246,7 +246,7 @@ struct ContactImportView: View {
             Spacer()
             
             // Headline
-            Text("Onboarding complete! Now let's import your contacts so Peeply can begin to help you build strong relationships!")
+            Text("Now let's import your contacts so Peeply can begin to help you build strong relationships!")
                 .font(.title3)
                 .fontWeight(.semibold)
                 .multilineTextAlignment(.center)
