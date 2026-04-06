@@ -280,7 +280,7 @@ struct ContactImportView: View {
     
     private var successView: some View {
         ZStack {
-            Color.peeplyBackground
+            Color.white
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
@@ -288,13 +288,7 @@ struct ContactImportView: View {
                 VStack(spacing: 16) {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 60))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [Color.peeplyRose, Color.peeplyLavender],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
+                        .foregroundStyle(Color.peeplyPink)
                     
                     Text("Your contacts successfully imported to Peeply. You can now use Peeply just as you have always used your device contacts list. Add new contacts, Search for Contacts, Edit Contact information, Call, Text, or Email. Do it all and more with Peeply!")
                         .font(.title2)
@@ -303,7 +297,7 @@ struct ContactImportView: View {
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 32)
                 }
-                .padding(.top, 40)
+                .padding(.top, 80)
                 .padding(.bottom, 32)
                 
                 Text("Important note from Peeply Development Team: Your existing iPhone contacts will now be in Peeply and also remain in your iPhone contacts app. If you delete Peeply, your original contacts remain in your iPhone's contacts but any new contacts you added directly in Peeply will be deleted along with all other app data. iCloud data backup is coming in a future Peeply release — when available, all of your Peeply data will be protected even if you delete and reinstall the app. We will notify all users when that update is available.")
@@ -321,7 +315,7 @@ struct ContactImportView: View {
                         .foregroundStyle(Color.peeplyWhite)
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
-                        .background(Color.peeplyCharcoal)
+                        .background(Color.peeplyPink)
                         .cornerRadius(16)
                 }
                 .padding(.horizontal, 20)

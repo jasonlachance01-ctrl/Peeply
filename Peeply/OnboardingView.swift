@@ -170,6 +170,8 @@ struct OnboardingView: View {
     
     private var welcomeView: some View {
         VStack(spacing: 0) {
+            Spacer()
+            
             // Welcome content - top third of page
             VStack(spacing: 32) {
                 // Welcome text
@@ -182,7 +184,6 @@ struct OnboardingView: View {
             }
             .padding(.top, 56)
             .frame(maxWidth: .infinity)
-            .frame(maxHeight: .infinity, alignment: .top)
             
             Spacer()
             
