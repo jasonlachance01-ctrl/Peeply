@@ -150,6 +150,27 @@ struct ContactDetailView: View {
             options: .regularExpression
         )
     }
+
+    private func formatPhoneNumber(_ phone: String) -> String {
+        let digits = phone.filter(\.isNumber)
+
+        if digits.count == 10 {
+            let area = digits.prefix(3)
+            let mid = digits.dropFirst(3).prefix(3)
+            let last = digits.suffix(4)
+            return "(\(area)) \(mid)-\(last)"
+        }
+
+        if digits.count == 11, digits.first == "1" {
+            let rest = String(digits.dropFirst())
+            let area = rest.prefix(3)
+            let mid = rest.dropFirst(3).prefix(3)
+            let last = rest.suffix(4)
+            return "+1 (\(area)) \(mid)-\(last)"
+        }
+
+        return phone
+    }
     
     private func callPhone(_ phoneNumber: String) {
         let cleaned = cleanPhoneNumber(phoneNumber)
@@ -336,7 +357,7 @@ struct ContactDetailView: View {
                                 Text(phoneLabel(for: item.index).capitalized)
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
-                                Text(item.value)
+                                Text(formatPhoneNumber(item.value))
                                     .foregroundStyle(.primary)
                             }
                             Spacer()
@@ -648,6 +669,27 @@ struct EditContactSheet: View {
     private var isFormValid: Bool {
         !firstName.trimmingCharacters(in: .whitespaces).isEmpty
     }
+
+    private func formatPhoneNumber(_ phone: String) -> String {
+        let digits = phone.filter(\.isNumber)
+
+        if digits.count == 10 {
+            let area = digits.prefix(3)
+            let mid = digits.dropFirst(3).prefix(3)
+            let last = digits.suffix(4)
+            return "(\(area)) \(mid)-\(last)"
+        }
+
+        if digits.count == 11, digits.first == "1" {
+            let rest = String(digits.dropFirst())
+            let area = rest.prefix(3)
+            let mid = rest.dropFirst(3).prefix(3)
+            let last = rest.suffix(4)
+            return "+1 (\(area)) \(mid)-\(last)"
+        }
+
+        return phone
+    }
     
     private func saveChanges() {
         contact.firstName = firstName.trimmingCharacters(in: .whitespaces)
@@ -835,7 +877,7 @@ struct EditContactSheet: View {
                                 editPhoneNumber(at: index)
                             }) {
                                 HStack {
-                                    Text(phoneNumbers[index])
+                                    Text(formatPhoneNumber(phoneNumbers[index]))
                                         .foregroundStyle(.primary)
                                     Spacer()
                                 }

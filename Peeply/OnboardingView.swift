@@ -61,7 +61,7 @@ struct OnboardingView: View {
             question: "How would you describe your follow-up habits today?",
             subtitle: nil,
             type: .multipleChoice,
-            answers: ["I'm great at it, I schedule or automate my follow-ups", "I could definitely improve"]
+            answers: ["I am great at follow-up", "I could definitely improve"]
         ),
         OnboardingQuestion(
             id: 5,
@@ -96,14 +96,14 @@ struct OnboardingView: View {
             question: "When you think about your most meaningful relationships, what feels most true?",
             subtitle: nil,
             type: .multipleChoice,
-            answers: ["I invest in them consistently", "I've let some of them drift more than I'd like"]
+            answers: ["I invest in them consistently", "I feel like I've let some drift"]
         ),
         OnboardingQuestion(
             id: 10,
             question: "If the people in your contacts list were asked if you consistently make them feel remembered and valued, what would they say today?",
             subtitle: nil,
             type: .multipleChoice,
-            answers: ["Absolutely, without hesitation", "Mostly yes", "They'd say I try but could do better", "Honestly, probably not enough"]
+            answers: ["Absolutely, without hesitation", "Mostly yes", "Honestly, probably not enough"]
         )
     ]
     
@@ -287,16 +287,6 @@ struct OnboardingView: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 24)
             }
-            
-            // Progress dots
-            HStack(spacing: 8) {
-                ForEach(0..<questions.count, id: \.self) { index in
-                    Circle()
-                        .fill(index == currentQuestionIndex ? Color.peeplyLavender : Color.peeplyCharcoal.opacity(0.3))
-                        .frame(width: 8, height: 8)
-                }
-            }
-            .padding(.bottom, 16)
             
             // Navigation buttons
             HStack {

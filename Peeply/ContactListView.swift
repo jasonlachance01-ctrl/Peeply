@@ -107,6 +107,27 @@ struct ContactListView: View {
             return "Not set"
         }
     }
+
+    private func formatPhoneNumber(_ phone: String) -> String {
+        let digits = phone.filter(\.isNumber)
+
+        if digits.count == 10 {
+            let area = digits.prefix(3)
+            let mid = digits.dropFirst(3).prefix(3)
+            let last = digits.suffix(4)
+            return "(\(area)) \(mid)-\(last)"
+        }
+
+        if digits.count == 11, digits.first == "1" {
+            let rest = String(digits.dropFirst())
+            let area = rest.prefix(3)
+            let mid = rest.dropFirst(3).prefix(3)
+            let last = rest.suffix(4)
+            return "+1 (\(area)) \(mid)-\(last)"
+        }
+
+        return phone
+    }
     
     private func initials(for contact: Contact) -> String {
         let firstInitial = contact.firstName.prefix(1).uppercased()
