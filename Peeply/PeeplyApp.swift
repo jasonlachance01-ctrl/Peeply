@@ -8,12 +8,14 @@
 import SwiftUI
 import SwiftData
 import RevenueCat
+import UserNotifications
 
 @main
 struct PeeplyApp: App {
     init() {
         // TODO: Replace with live key before App Store submission
         Purchases.configure(withAPIKey: "test_CZTjKBZxkPtQrIsmAWlFcLZCzXF")
+        UNUserNotificationCenter.current().setBadgeCount(0, withCompletionHandler: nil)
     }
     
     var body: some Scene {

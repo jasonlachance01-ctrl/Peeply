@@ -50,8 +50,8 @@ struct ContactListView: View {
             }
             
             return deduplicated.sorted { contact1, contact2 in
-                let lastName1 = contact1.lastName?.lowercased() ?? ""
-                let lastName2 = contact2.lastName?.lowercased() ?? ""
+                let lastName1 = contact1.lastName?.lowercased().isEmpty == false ? contact1.lastName!.lowercased() : contact1.firstName.lowercased()
+                let lastName2 = contact2.lastName?.lowercased().isEmpty == false ? contact2.lastName!.lowercased() : contact2.firstName.lowercased()
                 let firstName1 = contact1.firstName.lowercased()
                 let firstName2 = contact2.firstName.lowercased()
                 
@@ -66,8 +66,8 @@ struct ContactListView: View {
         
         // Normal sorting if no duplicates
         return contacts.sorted { contact1, contact2 in
-            let lastName1 = contact1.lastName?.lowercased() ?? ""
-            let lastName2 = contact2.lastName?.lowercased() ?? ""
+            let lastName1 = contact1.lastName?.lowercased().isEmpty == false ? contact1.lastName!.lowercased() : contact1.firstName.lowercased()
+            let lastName2 = contact2.lastName?.lowercased().isEmpty == false ? contact2.lastName!.lowercased() : contact2.firstName.lowercased()
             let firstName1 = contact1.firstName.lowercased()
             let firstName2 = contact2.firstName.lowercased()
             
@@ -382,6 +382,23 @@ struct ContactListView: View {
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
                         .focused($isSearchFieldFocused)
+                        .overlay(alignment: .trailing) {
+                            if !searchText.isEmpty {
+                                Button(action: { searchText = "" }) {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .foregroundStyle(Color.peeplyCharcoal.opacity(0.6))
+                                }
+                                .padding(.trailing, 4)
+                            }
+                        }
+                        .toolbar {
+                            ToolbarItemGroup(placement: .keyboard) {
+                                Spacer()
+                                Button("Done") {
+                                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                                }
+                            }
+                        }
                 }
                 .padding(12)
                 .background(Color.peeplyBackground)
