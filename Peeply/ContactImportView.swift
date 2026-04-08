@@ -290,10 +290,16 @@ struct ContactImportView: View {
                         .font(.system(size: 60))
                         .foregroundStyle(Color.peeplyPink)
                     
-                    Text("Your contacts successfully imported to Peeply. You can now use Peeply just as you have always used your device contacts list. Add new contacts, Search for Contacts, Edit Contact information, Call, Text, or Email. Do it all and more with Peeply!")
+                    Text("Your contacts successfully imported to Peeply.")
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundStyle(Color.peeplyCharcoal)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
+                    
+                    Text("You can now use Peeply just as you have always used your device contacts list. Add new contacts, Search for Contacts, Edit Contact information, Call, Text, or Email. Do it all and more with Peeply!")
+                        .font(.caption)
+                        .foregroundStyle(Color.peeplyCharcoal.opacity(0.7))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 32)
                 }

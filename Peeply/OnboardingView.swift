@@ -289,25 +289,27 @@ struct OnboardingView: View {
             }
             
             // Navigation buttons
-            HStack {
-                // Skip Onboarding button
-                Button(action: skipOnboarding) {
-                    Text("Skip Onboarding")
-                        .font(.subheadline)
-                        .foregroundStyle(Color.peeplyCharcoal.opacity(0.6))
+            if currentQuestion.type != .textEntry {
+                HStack {
+                    // Skip Onboarding button
+                    Button(action: skipOnboarding) {
+                        Text("Skip Onboarding")
+                            .font(.subheadline)
+                            .foregroundStyle(Color.peeplyCharcoal.opacity(0.6))
+                    }
+                    
+                    Spacer()
+                    
+                    // Skip Question button
+                    Button(action: skipQuestion) {
+                        Text("Skip Question")
+                            .font(.subheadline)
+                            .foregroundStyle(Color.peeplyCharcoal.opacity(0.6))
+                    }
                 }
-                
-                Spacer()
-                
-                // Skip Question button
-                Button(action: skipQuestion) {
-                    Text("Skip Question")
-                        .font(.subheadline)
-                        .foregroundStyle(Color.peeplyCharcoal.opacity(0.6))
-                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 32)
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 32)
         }
     }
 }
