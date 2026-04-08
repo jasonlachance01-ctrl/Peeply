@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UserNotifications
 
 struct PersonOfTheDayView: View {
     let contact: Contact
@@ -66,7 +67,10 @@ struct PersonOfTheDayView: View {
                 // Dismiss button (top-right)
                 HStack {
                     Spacer()
-                    Button(action: onDismiss) {
+                    Button(action: {
+                        UNUserNotificationCenter.current().setBadgeCount(0, withCompletionHandler: nil)
+                        onDismiss()
+                    }) {
                         Image(systemName: "xmark.circle.fill")
                             .font(.title2)
                             .foregroundStyle(Color.peeplyCharcoal.opacity(0.6))
@@ -142,6 +146,7 @@ struct PersonOfTheDayView: View {
                             // Call button
                             Button(action: {
                                 callPhone(phoneNumber)
+                                UNUserNotificationCenter.current().setBadgeCount(0, withCompletionHandler: nil)
                                 onDismiss()
                             }) {
                                 HStack(spacing: 8) {
@@ -165,6 +170,7 @@ struct PersonOfTheDayView: View {
                             // Text button
                             Button(action: {
                                 sendMessage(phoneNumber)
+                                UNUserNotificationCenter.current().setBadgeCount(0, withCompletionHandler: nil)
                                 onDismiss()
                             }) {
                                 HStack(spacing: 8) {
@@ -191,6 +197,13 @@ struct PersonOfTheDayView: View {
                             }
                         }
                         .padding(.horizontal, 32)
+                        
+                        Text("Stop what you are doing and give them a call or text right now and let them know you are thinking of them!")
+                            .font(.subheadline)
+                            .foregroundStyle(Color.peeplyCharcoal.opacity(0.8))
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 32)
+                            .padding(.top, 16)
                     }
                 }
                 .padding(.vertical, 40)

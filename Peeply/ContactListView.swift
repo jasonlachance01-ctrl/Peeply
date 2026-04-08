@@ -366,15 +366,6 @@ struct ContactListView: View {
                     .foregroundStyle(Color.peeplyCharcoal)
                 
                 Spacer()
-                
-                // Search icon
-                Button(action: {
-                    showSearch.toggle()
-                }) {
-                    Image(systemName: "magnifyingglass")
-                        .font(.system(size: 20, weight: .regular))
-                        .foregroundStyle(Color.peeplyCharcoal)
-                }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
