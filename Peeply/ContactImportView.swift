@@ -290,7 +290,7 @@ struct ContactImportView: View {
                         .font(.system(size: 60))
                         .foregroundStyle(Color.peeplyPink)
                     
-                    Text("Your contacts successfully imported to Peeply.")
+                    Text("Your contacts successfully imported!")
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundStyle(Color.peeplyCharcoal)
@@ -303,11 +303,11 @@ struct ContactImportView: View {
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 32)
                 }
-                .padding(.top, 80)
+                .padding(.top, 40)
                 .padding(.bottom, 32)
                 
                 Text("Important note from Peeply Development Team: Your existing iPhone contacts will now be in Peeply and also remain in your iPhone contacts app. If you delete Peeply, your original contacts remain in your iPhone's contacts but any new contacts you added directly in Peeply will be deleted along with all other app data. iCloud data backup is coming in a future Peeply release — when available, all of your Peeply data will be protected even if you delete and reinstall the app. We will notify all users when that update is available.")
-                    .font(.caption)
+                    .font(.caption2)
                     .foregroundStyle(Color.peeplyCharcoal.opacity(0.7))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 24)
