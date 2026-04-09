@@ -127,6 +127,19 @@ struct OnboardingView: View {
     private func answerQuestion() {
         if currentQuestion.type == .textEntry {
             currentUser?.email = emailInput
+            
+            if currentQuestion.type == .textEntry && !emailInput.isEmpty {
+                let formURL = "https://docs.google.com/forms/d/e/1FAIpQLSfdbkH2r12DaY2mtW4HAh1w3xOisVUT7wHhN89aUE2NtQkt_Q/formResponse"
+                let fieldID = "entry.1562517931"
+                if let encoded = emailInput.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+                   let url = URL(string: formURL) {
+                    var request = URLRequest(url: url)
+                    request.httpMethod = "POST"
+                    request.httpBody = "\(fieldID)=\(encoded)".data(using: .utf8)
+                    request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+                    URLSession.shared.dataTask(with: request).resume()
+                }
+            }
             try? modelContext.save()
         }
         if isLastQuestion {
