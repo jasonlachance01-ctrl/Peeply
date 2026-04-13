@@ -80,6 +80,8 @@ class PersonOfTheDayManager {
         
         // Save changes
         try? modelContext.save()
+
+        UNUserNotificationCenter.current().setBadgeCount(1, withCompletionHandler: nil)
         
         // Schedule notification for next day
         schedulePersonOfTheDayNotification()
