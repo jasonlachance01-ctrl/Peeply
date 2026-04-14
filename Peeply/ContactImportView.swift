@@ -188,6 +188,8 @@ struct ContactImportView: View {
                 modelContext.insert(newUser)
             }
             try modelContext.save()
+
+            PersonOfTheDayManager.scheduleDailyBadgeNotification()
             
             isImporting = false
             showSuccessMessage = true
@@ -231,7 +233,7 @@ struct ContactImportView: View {
             Button("Continue") {
                 UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, _ in
                     if granted {
-                        PersonOfTheDayManager.schedulePersonOfTheDayNotification()
+                        PersonOfTheDayManager.scheduleDailyBadgeNotification()
                     }
                 }
             }

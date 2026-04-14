@@ -80,35 +80,37 @@ class PersonOfTheDayManager {
         
         // Save changes
         try? modelContext.save()
-
-        UNUserNotificationCenter.current().setBadgeCount(1, withCompletionHandler: nil)
-        
-        // Schedule notification for next day
-        schedulePersonOfTheDayNotification()
     }
     
-    /// Schedules a daily notification at 3:00 AM for Person of the Day
-    static func schedulePersonOfTheDayNotification() {
+    static func scheduleDailyBadgeNotification() {
+        removeDailyBadgeNotification()
         let center = UNUserNotificationCenter.current()
-        center.removePendingNotificationRequests(withIdentifiers: ["personOfTheDay"])
         let content = UNMutableNotificationContent()
-        content.title = "Your Person of the Day is ready! 🌟"
-        content.body = "Open Peeply to see who to connect with today."
+        content.title = "Person of the Day"
+        content.body = "Your POD is ready. Open Peeply to see who to reach out to today."
         content.badge = 1
         content.sound = .default
+
         var dateComponents = DateComponents()
         dateComponents.hour = 3
         dateComponents.minute = 0
+
         let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
         let request = UNNotificationRequest(
-            identifier: "personOfTheDay",
+            identifier: "dailyBadge",
             content: content,
             trigger: trigger
         )
+
         center.add(request) { error in
             if let error = error {
-                print("Error scheduling notification: \(error)")
+                print("Error scheduling daily badge notification: \(error)")
             }
         }
+    }
+    
+    static func removeDailyBadgeNotification() {
+        UNUserNotificationCenter.current().setBadgeCount(0, withCompletionHandler: nil)
+        UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: ["dailyBadge"])
     }
 }

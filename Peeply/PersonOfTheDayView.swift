@@ -68,7 +68,7 @@ struct PersonOfTheDayView: View {
                 HStack {
                     Spacer()
                     Button(action: {
-                        UNUserNotificationCenter.current().setBadgeCount(0, withCompletionHandler: nil)
+                        PersonOfTheDayManager.removeDailyBadgeNotification()
                         onDismiss()
                     }) {
                         Image(systemName: "xmark.circle.fill")
@@ -146,7 +146,7 @@ struct PersonOfTheDayView: View {
                             // Call button
                             Button(action: {
                                 callPhone(phoneNumber)
-                                UNUserNotificationCenter.current().setBadgeCount(0, withCompletionHandler: nil)
+                                PersonOfTheDayManager.removeDailyBadgeNotification()
                                 onDismiss()
                             }) {
                                 HStack(spacing: 8) {
@@ -170,7 +170,7 @@ struct PersonOfTheDayView: View {
                             // Text button
                             Button(action: {
                                 sendMessage(phoneNumber)
-                                UNUserNotificationCenter.current().setBadgeCount(0, withCompletionHandler: nil)
+                                PersonOfTheDayManager.removeDailyBadgeNotification()
                                 onDismiss()
                             }) {
                                 HStack(spacing: 8) {
