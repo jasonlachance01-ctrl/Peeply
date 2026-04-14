@@ -39,7 +39,26 @@ struct PeeplyApp: App {
                 configurations: [configuration]
             )
         } catch let error {
-            fatalError("Failed to create model container: \(error.localizedDescription)")
+            print("ModelContainer with migrationPlan failed: \(error.localizedDescription)")
+            
+            do {
+                return try ModelContainer(for: schema, configurations: [configuration])
+            } catch let error {
+                print("ModelContainer without migrationPlan failed: \(error.localizedDescription)")
+                
+                let inMemoryConfiguration = ModelConfiguration(
+                    schema: schema,
+                    isStoredInMemoryOnly: true,
+                    cloudKitDatabase: .none
+                )
+                
+                do {
+                    return try ModelContainer(for: schema, configurations: [inMemoryConfiguration])
+                } catch let error {
+                    print("All ModelContainer attempts failed: \(error.localizedDescription)")
+                    fatalError("Failed to create model container: \(error.localizedDescription)")
+                }
+            }
         }
     }
 }
