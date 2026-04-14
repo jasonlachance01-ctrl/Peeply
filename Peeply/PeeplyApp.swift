@@ -13,8 +13,7 @@ import UserNotifications
 @main
 struct PeeplyApp: App {
     init() {
-        // TODO: Replace with live key before App Store submission
-        Purchases.configure(withAPIKey: "test_CZTjKBZxkPtQrIsmAWlFcLZCzXF")
+        Purchases.configure(withAPIKey: "appl_qcjTLYRzAoUdqtJvrxRgClMbaQB")
     }
     
     var body: some Scene {
