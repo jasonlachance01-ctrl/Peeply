@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 import RevenueCat
 import RevenueCatUI
+import GoMarketMe
 
 struct PlanSelectionView: View {
     @Binding var navigationPath: NavigationPath
@@ -26,6 +27,7 @@ struct PlanSelectionView: View {
                 .onPurchaseCompleted { _ in
                     currentUser?.contactsImported = false
                     try? modelContext.save()
+                    Task { await GoMarketMe.shared.syncAllTransactions() }
                     navigationPath.append(AppRoute.contactImport)
                 }
                 .onRestoreCompleted { customerInfo in

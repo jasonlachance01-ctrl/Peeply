@@ -13,6 +13,7 @@
 		961C5F192F81C10E00AE3474 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 961C5F182F81C10E00AE3474 /* RevenueCat */; };
 		961C5F1B2F81C10E00AE3474 /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = 961C5F1A2F81C10E00AE3474 /* RevenueCatUI */; };
 		961C5F1E2F81C28D00AE3474 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 961C5F1D2F81C28D00AE3474 /* StoreKit.framework */; };
+		961C5F212F91390100AE3474 /* GoMarketMe in Frameworks */ = {isa = PBXBuildFile; productRef = 961C5F202F91390100AE3474 /* GoMarketMe */; };
 		962C1A0D2F46297C002A20B2 /* SupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 962C1A0C2F46297B002A20B2 /* SupportView.swift */; };
 		962C1A0F2F463498002A20B2 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 962C1A0E2F463498002A20B2 /* AboutView.swift */; };
 		962C1A112F463752002A20B2 /* PrivacyPolicyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 962C1A102F463752002A20B2 /* PrivacyPolicyView.swift */; };
@@ -102,6 +103,7 @@
 			files = (
 				961C5F1E2F81C28D00AE3474 /* StoreKit.framework in Frameworks */,
 				961C5F1B2F81C10E00AE3474 /* RevenueCatUI in Frameworks */,
+				961C5F212F91390100AE3474 /* GoMarketMe in Frameworks */,
 				961C5F192F81C10E00AE3474 /* RevenueCat in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -309,6 +311,7 @@
 			mainGroup = 96BF2D202F1D8DD3001E4E1F;
 			packageReferences = (
 				961C5F172F81C10E00AE3474 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
+				961C5F1F2F9133E600AE3474 /* XCRemoteSwiftPackageReference "gomarketme-swift" */,
 			);
 			productRefGroup = 96BF2D2A2F1D8DD3001E4E1F /* Products */;
 			projectDirPath = "";
@@ -715,6 +718,14 @@
 				minimumVersion = 5.67.1;
 			};
 		};
+		961C5F1F2F9133E600AE3474 /* XCRemoteSwiftPackageReference "gomarketme-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/GoMarketMe/gomarketme-swift.git";
+			requirement = {
+				kind = exactVersion;
+				version = 3.0.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -727,6 +738,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 961C5F172F81C10E00AE3474 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
 			productName = RevenueCatUI;
+		};
+		961C5F202F91390100AE3474 /* GoMarketMe */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 961C5F1F2F9133E600AE3474 /* XCRemoteSwiftPackageReference "gomarketme-swift" */;
+			productName = GoMarketMe;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

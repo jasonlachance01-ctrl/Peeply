@@ -9,11 +9,13 @@ import SwiftUI
 import SwiftData
 import RevenueCat
 import UserNotifications
+import GoMarketMe
 
 @main
 struct PeeplyApp: App {
     init() {
         Purchases.configure(withAPIKey: "appl_qcjTLYRzAoUdqtJvrxRgClMbaQB")
+        GoMarketMe.shared.initialize(apiKey: "Zx3wrjwhmRZPOnjYXmId4q3vmcWgRyV7gqMVJBS3")
     }
     
     var body: some Scene {

@@ -1,6 +1,15 @@
 {
-  "originHash" : "533de208f7207fdd36b99a2f0036707fca012c23defe0e4e99a820106aff336d",
+  "originHash" : "90d698e4b39df129a6558fbf427bb0527eb301cebe4bfe625f7d95c525b2c8b6",
   "pins" : [
+    {
+      "identity" : "gomarketme-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/GoMarketMe/gomarketme-swift.git",
+      "state" : {
+        "revision" : "df477cdb944a02945c2ec21b0e401e87507205c1",
+        "version" : "3.0.1"
+      }
+    },
     {
       "identity" : "purchases-ios-spm",
       "kind" : "remoteSourceControl",
