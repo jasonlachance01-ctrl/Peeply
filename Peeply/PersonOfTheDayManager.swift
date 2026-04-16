@@ -45,7 +45,7 @@ class PersonOfTheDayManager {
         
         // Need to select a new person of the day
         // Filter out contacts that don't have at least a first name
-        var validContacts = contacts.filter { !$0.firstName.isEmpty }
+        let validContacts = contacts.filter { !$0.firstName.isEmpty }
         
         guard !validContacts.isEmpty else {
             // No valid contacts available
