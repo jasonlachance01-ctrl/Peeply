@@ -33,6 +33,10 @@ class PersonOfTheDayManager {
             // Check if last selection was made on or after today's 3 AM cutoff
             if lastDate >= today3AM {
                 // Person of the day is already set for today - keep it
+                if user.hasContactedPersonOfTheDay {
+                    user.hasContactedPersonOfTheDay = false
+                    try? modelContext.save()
+                }
                 return
             }
         }
