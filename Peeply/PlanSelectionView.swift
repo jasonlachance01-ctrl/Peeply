@@ -15,6 +15,8 @@ struct PlanSelectionView: View {
     @Binding var navigationPath: NavigationPath
     @Query private var users: [PeeplyUser]
     @Environment(\.modelContext) private var modelContext
+    @State private var showPurchaseError = false
+    @State private var purchaseErrorMessage = ""
     
     private var currentUser: PeeplyUser? {
         users.first
@@ -37,6 +39,10 @@ struct PlanSelectionView: View {
                         navigationPath.append(AppRoute.contactImport)
                     }
                 }
+                .onPurchaseFailure { _ in
+                    purchaseErrorMessage = "Something went wrong with your purchase. Please try again or contact support@peeplyapp.com if the issue continues."
+                    showPurchaseError = true
+                }
             
             #if DEBUG
             Button(action: {
@@ -50,6 +56,11 @@ struct PlanSelectionView: View {
             #endif
         }
         .navigationBarBackButtonHidden(true)
+        .alert("Purchase Failed", isPresented: $showPurchaseError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(purchaseErrorMessage)
+        }
     }
 }
 
