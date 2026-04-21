@@ -24,11 +24,13 @@ struct PlanSelectionView: View {
         VStack(spacing: 0) {
             PaywallView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .onPurchaseCompleted { _ in
+                .onPurchaseCompleted { customerInfo in
                     currentUser?.contactsImported = false
                     try? modelContext.save()
                     Task { await GoMarketMe.shared.syncAllTransactions() }
-                    navigationPath.append(AppRoute.contactImport)
+                    if customerInfo.entitlements["Peeply Pro"]?.isActive == true {
+                        navigationPath.append(AppRoute.contactImport)
+                    }
                 }
                 .onRestoreCompleted { customerInfo in
                     if customerInfo.entitlements["Peeply Pro"]?.isActive == true {
