@@ -275,7 +275,7 @@ struct ContactImportView: View {
             .disabled(isImporting)
             .padding(.horizontal, 20)
 
-            Text("For best results select \"Share all Contacts\" when prompted.")
+            Text("For best results select to Share all Contacts and Approve notifications when prompted.")
                 .font(.caption)
                 .foregroundStyle(Color.peeplyCharcoal.opacity(0.6))
                 .multilineTextAlignment(.center)
