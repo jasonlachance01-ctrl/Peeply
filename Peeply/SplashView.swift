@@ -50,6 +50,10 @@ struct SplashView: View {
                     }
                 }
             }
+            if !showPersonOfTheDay && !didRouteReturningUser {
+                didRouteReturningUser = true
+                navigationPath.append(AppRoute.contactList)
+            }
         } else if currentUser?.onboardingCompleted == true {
             navigationPath = NavigationPath()
             Task {
@@ -94,6 +98,7 @@ struct SplashView: View {
             }
         }
         .onAppear {
+            didRouteReturningUser = false
             runReturningUserRouting()
         }
         .onChange(of: users) { _, _ in
