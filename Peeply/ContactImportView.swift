@@ -275,14 +275,14 @@ struct ContactImportView: View {
             .disabled(isImporting)
             .padding(.horizontal, 20)
 
-            Text("For best results select to Share all Contacts and Approve notifications when prompted.")
+            Spacer()
+
+            Text("Contacts access is required to use Peeply. Allow access by tapping Import Contacts, or enable it later in iPhone Settings > Privacy & Security > Contacts.")
                 .font(.caption)
                 .foregroundStyle(Color.peeplyCharcoal.opacity(0.6))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
-                .padding(.top, 12)
-            
-            Spacer()
+                .padding(.bottom, 32)
         }
         .background(Color.white)
     }
