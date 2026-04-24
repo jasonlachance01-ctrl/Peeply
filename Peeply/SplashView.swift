@@ -99,6 +99,9 @@ struct SplashView: View {
         .onChange(of: users) { _, _ in
             runReturningUserRouting()
         }
+        .onChange(of: contacts) { _, _ in
+            runReturningUserRouting()
+        }
         .sheet(isPresented: $showPersonOfTheDay) {
             if let contact = personOfTheDayContact {
                 PersonOfTheDayView(contact: contact) {
