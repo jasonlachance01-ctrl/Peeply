@@ -1,0 +1,45 @@
+# macOS
+.DS_Store
+
+# Xcode user data
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+
+# Xcode build products
+build/
+DerivedData/
+
+# Swift Package Manager
+/.build/
+Packages/
+Package.resolved
+
+# App packaging
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# Secrets / local config
+.env
+.env.*
+*.p8
+*.key
+*.pem
+*.mobileprovision
+
+# CocoaPods (only if added later)
+Pods/
+
+# Carthage (only if added later)
+Carthage/Build/
+
+# Temporary editor files
+*.swp
+*.tmp
