@@ -28,7 +28,15 @@ struct ContactListView: View {
     @State private var showSupport = false
     @State private var showNewContactsSheet = false
     @State private var contactToOpenAfterSheetDismiss: Contact?
-    
+
+    // New contact draft state
+    @State private var showAddContactSheet = false
+    @State private var newContactFirstName = ""
+    @State private var newContactLastName = ""
+    @State private var newContactPhone = ""
+    @State private var newContactEmail = ""
+    @State private var newContactCompany = ""
+
     private var sortedContacts: [Contact] {
         // Debug: Check for duplicates before sorting
         let uniqueContactIds = Set(contacts.map { $0.id })
@@ -70,8 +78,7 @@ struct ContactListView: View {
             let lastName2 = contact2.lastName?.lowercased().isEmpty == false ? contact2.lastName!.lowercased() : contact2.firstName.lowercased()
             let firstName1 = contact1.firstName.lowercased()
             let firstName2 = contact2.firstName.lowercased()
-            
-            // Sort by lastName first, then firstName
+
             if lastName1 != lastName2 {
                 return lastName1 < lastName2
             } else {
@@ -231,12 +238,56 @@ struct ContactListView: View {
     }
     
     private func addNewContact() {
-        let newContact = Contact(firstName: "New Contact")
-        modelContext.insert(newContact)
-        try? modelContext.save()
-        navigationPath.append(AppRoute.contactDetail(newContact))
+        newContactFirstName = ""
+        newContactLastName = ""
+        newContactPhone = ""
+        newContactEmail = ""
+        newContactCompany = ""
+        showAddContactSheet = true
     }
-    
+
+    private func saveNewContact() {
+        let trimmedFirstName = newContactFirstName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedLastName = newContactLastName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedPhone = newContactPhone.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedEmail = newContactEmail.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedCompany = newContactCompany.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !trimmedFirstName.isEmpty else {
+            return
+        }
+
+        let phoneNumbers = trimmedPhone.isEmpty ? [] : [trimmedPhone]
+        let emails = trimmedEmail.isEmpty ? [] : [trimmedEmail]
+        let newContact = Contact(
+            firstName: trimmedFirstName,
+            lastName: trimmedLastName.isEmpty ? nil : trimmedLastName,
+            phoneNumbers: phoneNumbers,
+            emails: emails,
+            company: trimmedCompany.isEmpty ? nil : trimmedCompany,
+            createdAt: Date()
+        )
+        
+        modelContext.insert(newContact)
+
+        do {
+            try modelContext.save()
+            showAddContactSheet = false
+            navigationPath.append(AppRoute.contactDetail(newContact))
+        } catch {
+            print("Failed to save new contact: \(error)")
+        }
+    }
+
+    private func discardNewContact() {
+        newContactFirstName = ""
+        newContactLastName = ""
+        newContactPhone = ""
+        newContactEmail = ""
+        newContactCompany = ""
+        showAddContactSheet = false
+    }
+
     @ViewBuilder
     private func streakCard(user: PeeplyUser?) -> some View {
         Button(action: {
@@ -627,6 +678,17 @@ struct ContactListView: View {
                 }
             }
         }
+        .sheet(isPresented: $showAddContactSheet) {
+            AddContactSheet(
+                firstName: $newContactFirstName,
+                lastName: $newContactLastName,
+                phoneNumber: $newContactPhone,
+                email: $newContactEmail,
+                company: $newContactCompany,
+                onSave: saveNewContact,
+                onDiscard: discardNewContact
+            )
+        }
     }
 }
 
@@ -820,6 +882,55 @@ struct DatePickerSheet: View {
             }
         }
         .presentationDetents([.medium])
+    }
+}
+
+struct AddContactSheet: View {
+    @Binding var firstName: String
+    @Binding var lastName: String
+    @Binding var phoneNumber: String
+    @Binding var email: String
+    @Binding var company: String
+
+    let onSave: () -> Void
+    let onDiscard: () -> Void
+
+    private var canSave: Bool {
+        !firstName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Name") {
+                    TextField("First name", text: $firstName)
+                    TextField("Last name", text: $lastName)
+                }
+
+                Section("Contact Info") {
+                    TextField("Phone", text: $phoneNumber)
+                        .keyboardType(.phonePad)
+                    TextField("Email", text: $email)
+                        .keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                    TextField("Company", text: $company)
+                }
+            }
+            .navigationTitle("New Contact")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Discard", role: .destructive, action: onDiscard)
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save", action: onSave)
+                        .fontWeight(.semibold)
+                        .disabled(!canSave)
+                }
+            }
+        }
+        .presentationDetents([.large])
     }
 }
 
