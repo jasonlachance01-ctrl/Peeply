@@ -17,6 +17,7 @@ struct SplashView: View {
     @State private var showPersonOfTheDay = false
     @State private var personOfTheDayContact: Contact?
     @State private var didRouteReturningUser = false
+    @State private var hasCompletedInitialRouting = false
     
     private var currentUser: PeeplyUser? {
         users.first
@@ -38,6 +39,7 @@ struct SplashView: View {
                     if user.hasContactedPersonOfTheDay {
                         guard !didRouteReturningUser else { return }
                         didRouteReturningUser = true
+                        hasCompletedInitialRouting = true
                         navigationPath.append(AppRoute.contactList)
                         return
                     }
@@ -47,11 +49,13 @@ struct SplashView: View {
                        let contact = contacts.first(where: { $0.id == contactId }) {
                         personOfTheDayContact = contact
                         showPersonOfTheDay = true
+                        hasCompletedInitialRouting = true
                     }
                 }
             }
             if !showPersonOfTheDay && !didRouteReturningUser {
                 didRouteReturningUser = true
+                hasCompletedInitialRouting = true
                 navigationPath.append(AppRoute.contactList)
             }
         } else if currentUser?.onboardingCompleted == true {
@@ -98,13 +102,16 @@ struct SplashView: View {
             }
         }
         .onAppear {
-            didRouteReturningUser = false
+            guard !hasCompletedInitialRouting else { return }
             runReturningUserRouting()
         }
         .onChange(of: users) { _, _ in
+            guard !hasCompletedInitialRouting else { return }
             runReturningUserRouting()
         }
         .onChange(of: contacts) { _, _ in
+            guard !hasCompletedInitialRouting else { return }
+            guard !didRouteReturningUser else { return }
             runReturningUserRouting()
         }
         .sheet(isPresented: $showPersonOfTheDay) {
