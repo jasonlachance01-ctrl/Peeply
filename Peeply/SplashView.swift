@@ -14,10 +14,12 @@ struct SplashView: View {
     @Query private var users: [PeeplyUser]
     @Query private var contacts: [Contact]
     @Environment(\.modelContext) private var modelContext
-    @State private var showPersonOfTheDay = false
+    @State private var showPersonOfTheDay = false //Is the sheet currently being presented
     @State private var personOfTheDayContact: Contact?
     @State private var didRouteReturningUser = false
-    @State private var hasCompletedInitialRouting = false
+    //@State private var hasCompletedInitialRouting = false
+    @State private var didInitialRoute = false //same as hasCompletedInitialRouting
+    @State private var didPresentPersonOfTheDay = false //Has this sheet already been presented
     
     private var currentUser: PeeplyUser? {
         users.first
@@ -27,48 +29,80 @@ struct SplashView: View {
         currentUser?.contactsImported == true
     }
     
+    private func routeToContactListIfNeeded() {
+        guard !didRouteReturningUser else { return }
+        didRouteReturningUser = true
+        didInitialRoute = true
+        navigationPath.append(AppRoute.contactList)
+    }
+
+    private func handlePersonOfTheDayDismiss() {
+        guard didPresentPersonOfTheDay else { return }
+
+        if let user = currentUser, !user.hasContactedPersonOfTheDay {
+            user.hasContactedPersonOfTheDay = true
+            try? modelContext.save()
+        }
+
+        showPersonOfTheDay = false
+        routeToContactListIfNeeded()
+    }
+    
     private func runReturningUserRouting() {
-        if currentUser == nil { return }
-        if currentUser?.contactsImported == true {
-            if isReturningUser {
-                // Update Person of the Day
-                if let user = currentUser {
-                    PersonOfTheDayManager.updatePersonOfTheDay(for: user, contacts: contacts, in: modelContext)
-                    
-                    // If the user already handled Person of the Day today, go straight to contact list
-                    if user.hasContactedPersonOfTheDay {
-                        guard !didRouteReturningUser else { return }
-                        didRouteReturningUser = true
-                        hasCompletedInitialRouting = true
-                        navigationPath.append(AppRoute.contactList)
-                        return
-                    }
-                    
-                    // Otherwise, find and show Person of the Day
-                    if let contactId = user.personOfTheDayContactId,
-                       let contact = contacts.first(where: { $0.id == contactId }) {
-                        personOfTheDayContact = contact
-                        showPersonOfTheDay = true
-                        hasCompletedInitialRouting = true
-                    }
-                }
+        // Must have a user or we can't route
+        guard let user = currentUser else {
+            return
+        }
+        // Once Splash has made its startup decision, later changes to users or contacts stop re-running routing logic
+        // This prevents splash from behaving like a long-lived global router after launch
+        guard !didInitialRoute else { return }
+        
+        // Case 1: User has imported contacts - returning user path
+        if user.contactsImported {
+            // Update Person of the Day
+            PersonOfTheDayManager.updatePersonOfTheDay(for: user, contacts: contacts, in: modelContext)
+            // If the user already handled Person of the Day today, go straight to contact list
+            if user.hasContactedPersonOfTheDay {
+                routeToContactListIfNeeded()
+                return
             }
-            if !showPersonOfTheDay && !didRouteReturningUser {
-                didRouteReturningUser = true
-                hasCompletedInitialRouting = true
-                navigationPath.append(AppRoute.contactList)
+            // Otherwise, try to show Person of the Day
+            if !didPresentPersonOfTheDay,
+               let contactId = user.personOfTheDayContactId,
+               let contact = contacts.first(where: { $0.id == contactId }) {
+                personOfTheDayContact = contact
+                didPresentPersonOfTheDay = true
+                showPersonOfTheDay = true
+                return
             }
-        } else if currentUser?.onboardingCompleted == true {
+            // If we did not show Person of the Day for any reason, go to contact list once
+            routeToContactListIfNeeded()
+            return
+        }
+
+        // From here on, user.contactsImported == false
+        // Case 2: User finished onboarding but didn't import contacts yet
+        if user.onboardingCompleted {
+            didInitialRoute = true
             navigationPath = NavigationPath()
             Task {
                 do {
                     let customerInfo = try await Purchases.shared.customerInfo()
                     let peeplyProActive = customerInfo.entitlements["Peeply Pro"]?.isActive == true
+                    
                     await MainActor.run {
-                        guard let user = currentUser, user.onboardingCompleted, user.contactsImported == false else {
+                        // Re-read user on the main actor in case it changed
+                        guard let latestUser = currentUser else {
                             navigationPath.append(AppRoute.planSelection)
                             return
                         }
+                        // If onboarding is complete and contacts are still not imported
+                        guard latestUser.onboardingCompleted, latestUser.contactsImported ==
+                                false else {
+                            navigationPath.append(AppRoute.planSelection)
+                            return
+                        }
+
                         if peeplyProActive {
                             navigationPath.append(AppRoute.contactImport)
                         } else {
@@ -81,9 +115,14 @@ struct SplashView: View {
                     }
                 }
             }
-        } else if currentUser?.onboardingCompleted == false && currentUser?.contactsImported == false {
+            return
+        }
+        // Case 3: User has NOT completed onboarding and has NOT imported contacts
+        if user.onboardingCompleted == false && user.contactsImported == false {
+            didInitialRoute = true
             navigationPath = NavigationPath()
             navigationPath.append(AppRoute.onboarding)
+            return
         }
     }
     
@@ -102,31 +141,27 @@ struct SplashView: View {
             }
         }
         .onAppear {
-            guard !hasCompletedInitialRouting else { return }
+            guard !didInitialRoute else { return }
+            didRouteReturningUser = false
+            didInitialRoute = false
+            didPresentPersonOfTheDay = false
             runReturningUserRouting()
         }
         .onChange(of: users) { _, _ in
-            guard !hasCompletedInitialRouting else { return }
+            guard !didInitialRoute else { return }
             runReturningUserRouting()
         }
         .onChange(of: contacts) { _, _ in
-            guard !hasCompletedInitialRouting else { return }
-            guard !didRouteReturningUser else { return }
+            guard !didInitialRoute else { return }
+            //guard !didRouteReturningUser else { return }
             runReturningUserRouting()
         }
-        .sheet(isPresented: $showPersonOfTheDay) {
+        .sheet(isPresented: $showPersonOfTheDay, onDismiss: {
+            handlePersonOfTheDayDismiss()
+        }) {
             if let contact = personOfTheDayContact {
                 PersonOfTheDayView(contact: contact) {
                     showPersonOfTheDay = false
-                    
-                    // Mark as contacted/dismissed for today and persist
-                    if let user = currentUser {
-                        user.hasContactedPersonOfTheDay = true
-                        try? modelContext.save()
-                    }
-                    
-                    // Navigate to ContactListView after dismissal
-                    navigationPath.append(AppRoute.contactList)
                 }
             }
         }
