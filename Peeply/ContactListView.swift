@@ -11,7 +11,10 @@ import UIKit
 
 struct ContactListView: View {
     @Binding var navigationPath: NavigationPath
-    @Query private var contacts: [Contact]
+    @Query(sort: [
+        SortDescriptor(\Contact.displaySortKey, order: .forward),
+        SortDescriptor(\Contact.firstName, order: .forward)
+    ]) private var contacts: [Contact]
     @Query private var users: [PeeplyUser]
     @Environment(\.modelContext) private var modelContext
     @State private var selectedContact: Contact?
@@ -38,55 +41,12 @@ struct ContactListView: View {
     @State private var newContactCompany = ""
 
     private var sortedContacts: [Contact] {
-        // Debug: Check for duplicates before sorting
-        let uniqueContactIds = Set(contacts.map { $0.id })
-        print("DEBUG: Total contacts from @Query: \(contacts.count)")
-        print("DEBUG: Unique contact IDs: \(uniqueContactIds.count)")
-        
-        if contacts.count != uniqueContactIds.count {
-            print("WARNING: Duplicate contacts detected in database!")
-            // Remove duplicates by keeping first occurrence of each ID
-            var seenIds = Set<UUID>()
-            let deduplicated = contacts.filter { contact in
-                if seenIds.contains(contact.id) {
-                    print("DEBUG: Found duplicate contact: \(contact.firstName) \(contact.lastName ?? "") (ID: \(contact.id))")
-                    return false
-                } else {
-                    seenIds.insert(contact.id)
-                    return true
-                }
-            }
-            
-            return deduplicated.sorted { contact1, contact2 in
-                let lastName1 = contact1.lastName?.lowercased().isEmpty == false ? contact1.lastName!.lowercased() : contact1.firstName.lowercased()
-                let lastName2 = contact2.lastName?.lowercased().isEmpty == false ? contact2.lastName!.lowercased() : contact2.firstName.lowercased()
-                let firstName1 = contact1.firstName.lowercased()
-                let firstName2 = contact2.firstName.lowercased()
-                
-                // Sort by lastName first, then firstName
-                if lastName1 != lastName2 {
-                    return lastName1 < lastName2
-                } else {
-                    return firstName1 < firstName2
-                }
-            }
-        }
-        
-        // Normal sorting if no duplicates
-        return contacts.sorted { contact1, contact2 in
-            let lastName1 = contact1.lastName?.lowercased().isEmpty == false ? contact1.lastName!.lowercased() : contact1.firstName.lowercased()
-            let lastName2 = contact2.lastName?.lowercased().isEmpty == false ? contact2.lastName!.lowercased() : contact2.firstName.lowercased()
-            let firstName1 = contact1.firstName.lowercased()
-            let firstName2 = contact2.firstName.lowercased()
-
-            if lastName1 != lastName2 {
-                return lastName1 < lastName2
-            } else {
-                return firstName1 < firstName2
-            }
-        }
+        // Contacts are now sorted at the SwiftData query layer using displaySortKey
+        // to preserve the old "last name if present, otherwise first name" behavior
+        // without re-sorting the entire list in memory on every view recomputation.
+        contacts
     }
-    
+
     private var filteredContacts: [Contact] {
         let query = searchText.trimmingCharacters(in: .whitespaces).lowercased()
         guard !query.isEmpty else { return sortedContacts }
@@ -95,7 +55,7 @@ struct ContactListView: View {
                 || (contact.lastName?.lowercased() ?? "").contains(query)
         }
     }
-    
+
     private func fullName(for contact: Contact) -> String {
         if let lastName = contact.lastName, !lastName.isEmpty {
             return "\(contact.firstName) \(lastName)"
@@ -103,7 +63,7 @@ struct ContactListView: View {
             return contact.firstName
         }
     }
-    
+
     private func formattedDateString(for contact: Contact) -> String {
         if let date = contact.lastOneToOne {
             let formatter = DateFormatter()
@@ -135,50 +95,50 @@ struct ContactListView: View {
 
         return phone
     }
-    
+
     private func initials(for contact: Contact) -> String {
         let firstInitial = contact.firstName.prefix(1).uppercased()
         let lastInitial = contact.lastName?.prefix(1).uppercased() ?? ""
         return "\(firstInitial)\(lastInitial)"
     }
-    
+
     private func contactPhoto(for contact: Contact) -> UIImage? {
         guard let photoData = contact.photoData else { return nil }
         return UIImage(data: photoData)
     }
-    
+
     private func openDatePicker(for contact: Contact) {
         selectedContact = contact
         selectedDate = contact.lastOneToOne ?? Date()
         showDatePicker = true
     }
-    
+
     private var currentUser: PeeplyUser? {
         users.first
     }
-    
+
     private var newContactsThisMonth: Int {
         contactsCreatedThisMonth.count
     }
-    
+
     private var contactsCreatedThisMonth: [Contact] {
         let calendar = Calendar.current
         let now = Date()
         let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: now)) ?? now
-        
+
         return sortedContacts.filter { contact in
             guard let createdAt = contact.createdAt else { return false }
             return createdAt >= startOfMonth
         }
     }
-    
+
     private func saveDate() {
         guard let contact = selectedContact else { return }
-        
+
         let wasToday = StreakManager.isToday(selectedDate)
         contact.lastOneToOne = selectedDate
         try? modelContext.save()
-        
+
         // Update streak if date is today
         if wasToday, let user = currentUser {
             let streakContinued = StreakManager.updateStreak(for: user, in: modelContext)
@@ -190,23 +150,23 @@ struct ContactListView: View {
                 }
             }
         }
-        
+
         showDatePicker = false
         selectedContact = nil
     }
-    
+
     private func selectRandomContacts() {
         let availableContacts = sortedContacts
         let count = min(5, availableContacts.count)
-        
+
         if count == 0 {
             return
         }
-        
+
         // Select random contacts
         var selected: [Contact] = []
         var indices = Set<Int>()
-        
+
         while selected.count < count && indices.count < availableContacts.count {
             let randomIndex = Int.random(in: 0..<availableContacts.count)
             if !indices.contains(randomIndex) {
@@ -214,14 +174,14 @@ struct ContactListView: View {
                 selected.append(availableContacts[randomIndex])
             }
         }
-        
+
         // Update contacts first
         randomContacts = selected
-        
+
         // Trigger haptic feedback
         hapticGenerator.prepare()
         hapticGenerator.impactOccurred()
-        
+
         // Show sheet - use DispatchQueue to ensure state update completes first
         // This ensures randomContacts is set before the sheet is created
         DispatchQueue.main.async {
@@ -231,12 +191,12 @@ struct ContactListView: View {
             }
         }
     }
-    
+
     private func openContactDetail(_ contact: Contact) {
         showRandomizer = false
         navigationPath.append(AppRoute.contactDetail(contact))
     }
-    
+
     private func addNewContact() {
         newContactFirstName = ""
         newContactLastName = ""
@@ -267,7 +227,7 @@ struct ContactListView: View {
             company: trimmedCompany.isEmpty ? nil : trimmedCompany,
             createdAt: Date()
         )
-        
+
         modelContext.insert(newContact)
 
         do {
@@ -304,15 +264,15 @@ struct ContactListView: View {
                             Text("🔥")
                                 .font(.system(size: 24))
                         )
-                    
+
                     Spacer()
-                    
+
                     // Arrow icon
                     Image(systemName: "chevron.right")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundStyle(Color.peeplyCharcoal.opacity(0.5))
                 }
-                
+
                 // Number
                 if let user = user, user.currentStreak > 0 {
                     Text("\(user.currentStreak)")
@@ -323,7 +283,7 @@ struct ContactListView: View {
                         .font(.system(size: 20, weight: .bold, design: .default))
                         .foregroundStyle(Color.peeplyCharcoal)
                 }
-                
+
                 // Descriptive text
                 Text("Daily one-to-one Streak")
                     .font(.system(size: 12, weight: .regular, design: .default))
@@ -336,7 +296,7 @@ struct ContactListView: View {
         }
         .buttonStyle(.plain)
     }
-    
+
     private var growthTrackingCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Top row with icon and arrow
@@ -350,20 +310,20 @@ struct ContactListView: View {
                             .font(.system(size: 24, weight: .medium))
                             .foregroundStyle(Color.peeplyCharcoal)
                     )
-                
+
                 Spacer()
-                
+
                 // Arrow icon
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(Color.peeplyCharcoal.opacity(0.5))
             }
-            
+
             // Number
             Text("\(newContactsThisMonth)")
                 .font(.system(size: 20, weight: .bold, design: .default))
                 .foregroundStyle(Color.peeplyCharcoal)
-            
+
             // Descriptive text
             Text("New Contacts Added this Month")
                 .font(.system(size: 12, weight: .regular, design: .default))
@@ -374,17 +334,17 @@ struct ContactListView: View {
         .background(Color.peeplyWhite)
         .cornerRadius(20)
     }
-    
+
     private var celebrationView: some View {
         ZStack {
             Color.black.opacity(0.3)
                 .ignoresSafeArea()
-            
+
             VStack(spacing: 16) {
                 Text("🔥")
                     .font(.system(size: 60))
                     .scaleEffect(showStreakCelebration ? 1.3 : 1.0)
-                
+
                 if let user = currentUser {
                     Text("\(user.currentStreak) Day Streak!")
                         .font(.title2)
@@ -404,24 +364,24 @@ struct ContactListView: View {
             .animation(.spring(response: 0.4, dampingFraction: 0.7), value: showStreakCelebration)
         }
     }
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // Custom navigation bar
             HStack {
                 Spacer()
-                
+
                 // Title
                 Text("Contacts")
                     .font(.system(size: 20, weight: .medium, design: .default))
                     .foregroundStyle(Color.peeplyCharcoal)
-                
+
                 Spacer()
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
             .background(Color.peeplyWhite)
-            
+
             // Search bar (shown when Search tab or nav icon is tapped)
             if showSearch {
                 HStack(spacing: 8) {
@@ -456,7 +416,7 @@ struct ContactListView: View {
                 .padding(.horizontal, 16)
                 .onAppear { isSearchFieldFocused = true }
             }
-            
+
             // Content
             ScrollView {
                 VStack(spacing: 12) {
@@ -470,7 +430,7 @@ struct ContactListView: View {
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 12)
-                    
+
                     // Contact list
                     ForEach(filteredContacts, id: \.id) { contact in
                         HStack(spacing: 20) {
@@ -500,7 +460,7 @@ struct ContactListView: View {
                                             .foregroundStyle(Color.peeplyWhite)
                                     )
                             }
-                            
+
                             // Contact info
                             VStack(alignment: .leading, spacing: 4) {
                                 Button(action: {
@@ -512,7 +472,7 @@ struct ContactListView: View {
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                 }
                                 .buttonStyle(.plain)
-                                
+
                                 Button(action: {
                                     openDatePicker(for: contact)
                                 }) {
@@ -523,7 +483,7 @@ struct ContactListView: View {
                                 }
                                 .buttonStyle(.plain)
                             }
-                            
+
                             // Chevron
                             Button(action: {
                                 navigationPath.append(AppRoute.contactDetail(contact))
@@ -564,7 +524,7 @@ struct ContactListView: View {
                     .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.plain)
-                
+
                 // Add - center
                 Button(action: addNewContact) {
                     VStack(spacing: 4) {
@@ -577,7 +537,7 @@ struct ContactListView: View {
                     .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.plain)
-                
+
                 // Support - right
                 Button(action: {
                     showSupport = true
@@ -695,13 +655,13 @@ struct ContactListView: View {
 // Shake gesture detection
 struct ShakeDetector: UIViewControllerRepresentable {
     let onShake: () -> Void
-    
+
     func makeUIViewController(context: Context) -> ShakeViewController {
         let controller = ShakeViewController()
         controller.onShake = onShake
         return controller
     }
-    
+
     func updateUIViewController(_ uiViewController: ShakeViewController, context: Context) {
         uiViewController.onShake = onShake
     }
@@ -709,7 +669,7 @@ struct ShakeDetector: UIViewControllerRepresentable {
 
 class ShakeViewController: UIViewController {
     var onShake: (() -> Void)?
-    
+
     override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
         if motion == .motionShake {
             onShake?()
@@ -728,7 +688,7 @@ struct ContactRandomizerSheet: View {
     let onContactTap: (Contact) -> Void
     let onShake: () -> Void
     let onClose: () -> Void
-    
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -743,7 +703,7 @@ struct ContactRandomizerSheet: View {
                 }
                 .padding(.top, 32)
                 .padding(.bottom, 24)
-                
+
                 // Contact list
                 if contacts.isEmpty {
                     Spacer()
@@ -779,12 +739,12 @@ struct ContactRandomizerSheet: View {
                                                 .foregroundStyle(Color.peeplyWhite)
                                         )
                                 }
-                                
+
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(fullName(for: contact))
                                         .font(.body)
                                         .foregroundStyle(.primary)
-                                    
+
                                     if let company = contact.company, !company.isEmpty {
                                         Text(company)
                                             .font(.caption)
@@ -800,7 +760,7 @@ struct ContactRandomizerSheet: View {
                         .buttonStyle(.plain)
                     }
                 }
-                
+
                 Text("📸 Take a screenshot! Once you close or navigate away from this unique Randomizer list you will not be able to return to it.")
                     .font(.caption)
                     .foregroundStyle(Color.peeplyCharcoal.opacity(0.6))
@@ -821,7 +781,7 @@ struct ContactRandomizerSheet: View {
             }
         }
     }
-    
+
     private func fullName(for contact: Contact) -> String {
         if let lastName = contact.lastName, !lastName.isEmpty {
             return "\(contact.firstName) \(lastName)"
@@ -829,13 +789,13 @@ struct ContactRandomizerSheet: View {
             return contact.firstName
         }
     }
-    
+
     private func initials(for contact: Contact) -> String {
         let firstInitial = contact.firstName.prefix(1).uppercased()
         let lastInitial = contact.lastName?.prefix(1).uppercased() ?? ""
         return "\(firstInitial)\(lastInitial)"
     }
-    
+
     private func contactPhoto(for contact: Contact) -> UIImage? {
         guard let photoData = contact.photoData else { return nil }
         return UIImage(data: photoData)
@@ -847,7 +807,7 @@ struct DatePickerSheet: View {
     let onSave: () -> Void
     let onCancel: () -> Void
     @State private var hapticGenerator = UIImpactFeedbackGenerator(style: .light)
-    
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -866,7 +826,7 @@ struct DatePickerSheet: View {
                 .onAppear {
                     hapticGenerator.prepare()
                 }
-                
+
                 Spacer()
             }
             .navigationTitle("Last One-to-One")
