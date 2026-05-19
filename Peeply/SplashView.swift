@@ -20,15 +20,16 @@ struct SplashView: View {
     //@State private var hasCompletedInitialRouting = false
     @State private var didInitialRoute = false //same as hasCompletedInitialRouting
     @State private var didPresentPersonOfTheDay = false //Has this sheet already been presented
-    
+    @State private var didRunDisplaySortKeyMigration = false //Has the one-time displaySortKey backfill been run this launch
+
     private var currentUser: PeeplyUser? {
         users.first
     }
-    
+
     private var isReturningUser: Bool {
         currentUser?.contactsImported == true
     }
-    
+
     private func routeToContactListIfNeeded() {
         guard !didRouteReturningUser else { return }
         didRouteReturningUser = true
@@ -47,7 +48,13 @@ struct SplashView: View {
         showPersonOfTheDay = false
         routeToContactListIfNeeded()
     }
-    
+
+    private func runDisplaySortKeyMigrationIfNeeded() {
+        guard !didRunDisplaySortKeyMigration else { return }
+        didRunDisplaySortKeyMigration = true
+        ContactSortKeyMigration.backfillDisplaySortKeysIfNeeded(in: modelContext)
+    }
+
     private func runReturningUserRouting() {
         // Must have a user or we can't route
         guard let user = currentUser else {
@@ -56,7 +63,11 @@ struct SplashView: View {
         // Once Splash has made its startup decision, later changes to users or contacts stop re-running routing logic
         // This prevents splash from behaving like a long-lived global router after launch
         guard !didInitialRoute else { return }
-        
+
+        // Ensure older contacts have a persisted displaySortKey before routing depends on contact ordering.
+        // This is a one-time backfill for records created before displaySortKey existed.
+        runDisplaySortKeyMigrationIfNeeded()
+
         // Case 1: User has imported contacts - returning user path
         if user.contactsImported {
             // Update Person of the Day
@@ -89,7 +100,7 @@ struct SplashView: View {
                 do {
                     let customerInfo = try await Purchases.shared.customerInfo()
                     let peeplyProActive = customerInfo.entitlements["Peeply Pro"]?.isActive == true
-                    
+
                     await MainActor.run {
                         // Re-read user on the main actor in case it changed
                         guard let latestUser = currentUser else {
@@ -125,13 +136,13 @@ struct SplashView: View {
             return
         }
     }
-    
+
     var body: some View {
         ZStack {
             // Background
             Color.peeplyBackground
                 .ignoresSafeArea()
-            
+
             if isReturningUser {
                 // Returning user view
                 returningUserView
@@ -145,6 +156,7 @@ struct SplashView: View {
             didRouteReturningUser = false
             didInitialRoute = false
             didPresentPersonOfTheDay = false
+            didRunDisplaySortKeyMigration = false
             runReturningUserRouting()
         }
         .onChange(of: users) { _, _ in
@@ -166,11 +178,11 @@ struct SplashView: View {
             }
         }
     }
-    
+
     private var returningUserView: some View {
         VStack(spacing: 0) {
             Spacer()
-            
+
             // Headline
             VStack(spacing: 16) {
                 Text("Welcome to Peeply!")
@@ -178,7 +190,7 @@ struct SplashView: View {
                     .foregroundStyle(Color.peeplyCharcoal)
                     .minimumScaleFactor(0.8)
                     .lineLimit(1)
-                
+
                 Text("Your Personal Relationship Command Center!")
                     .font(.title3)
                     .fontWeight(.medium)
@@ -187,12 +199,12 @@ struct SplashView: View {
             }
             .padding(.horizontal, 32)
             .padding(.bottom, 48)
-            
+
             // Person of the Day will be shown in sheet
             Spacer()
         }
     }
-    
+
     private var firstTimeUserView: some View {
         VStack(spacing: 0) {
             Spacer()

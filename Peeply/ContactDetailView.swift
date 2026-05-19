@@ -694,6 +694,7 @@ struct EditContactSheet: View {
     private func saveChanges() {
         contact.firstName = firstName.trimmingCharacters(in: .whitespaces)
         contact.lastName = lastName.trimmingCharacters(in: .whitespaces).isEmpty ? nil : lastName.trimmingCharacters(in: .whitespaces)
+        contact.refreshDisplaySortKey()
         contact.company = company.trimmingCharacters(in: .whitespaces).isEmpty ? nil : company.trimmingCharacters(in: .whitespaces)
         contact.jobTitle = jobTitle.trimmingCharacters(in: .whitespaces).isEmpty ? nil : jobTitle.trimmingCharacters(in: .whitespaces)
         contact.birthday = birthday

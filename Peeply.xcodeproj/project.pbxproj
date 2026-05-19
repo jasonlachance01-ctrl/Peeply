@@ -39,6 +39,7 @@
 		ADCEB2086C204EA088E48C83 /* OnboardingAnswer.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADCEB2086C204EA088E48C82 /* OnboardingAnswer.swift */; };
 		E7F8A1B42F900000001E4E1B /* PeeplySchemaV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F8A1B32F900000001E4E1A /* PeeplySchemaV1.swift */; };
 		E7F8A1B62F900000001E4E1D /* PeeplyMigrationPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F8A1B52F900000001E4E1C /* PeeplyMigrationPlan.swift */; };
+		EC4E541D2FBBCB2800117043 /* ContactSortKeyMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC4E541C2FBBCB2800117043 /* ContactSortKeyMigration.swift */; };
 		F5E70FB42E6C434591126597 /* PeeplyUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E70FB42E6C434591126596 /* PeeplyUser.swift */; };
 /* End PBXBuildFile section */
 
@@ -93,6 +94,7 @@
 		ADCEB2086C204EA088E48C82 /* OnboardingAnswer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingAnswer.swift; sourceTree = "<group>"; };
 		E7F8A1B32F900000001E4E1A /* PeeplySchemaV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeeplySchemaV1.swift; sourceTree = "<group>"; };
 		E7F8A1B52F900000001E4E1C /* PeeplyMigrationPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeeplyMigrationPlan.swift; sourceTree = "<group>"; };
+		EC4E541C2FBBCB2800117043 /* ContactSortKeyMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSortKeyMigration.swift; sourceTree = "<group>"; };
 		F5E70FB42E6C434591126596 /* PeeplyUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeeplyUser.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -189,6 +191,7 @@
 				96BF2D572F1D8DD8001E4E1F /* ContactImportView.swift */,
 				96BF2D592F1D8DD8001E4E1F /* ContactListView.swift */,
 				96BF2D5B2F1D8DD8001E4E1F /* ContactDetailView.swift */,
+				EC4E541C2FBBCB2800117043 /* ContactSortKeyMigration.swift */,
 				96BF2D2E2F1D8DD3001E4E1F /* ContentView.swift */,
 				96BF2D322F1D8DD6001E4E1F /* Preview Content */,
 				961C5F152F75790C00AE3474 /* Assets.xcassets */,
@@ -358,6 +361,7 @@
 				96992ACB2F26AC88002914BC /* PeeplyColors.swift in Sources */,
 				962C1A132F46376E002A20B2 /* TermsOfServiceView.swift in Sources */,
 				96BF2D2F2F1D8DD3001E4E1F /* ContentView.swift in Sources */,
+				EC4E541D2FBBCB2800117043 /* ContactSortKeyMigration.swift in Sources */,
 				96992ACD2F2C4B36002914BC /* SplashView.swift in Sources */,
 				96992ACF2F2E5F31002914BC /* StreakManager.swift in Sources */,
 				962C1A0F2F463498002A20B2 /* AboutView.swift in Sources */,

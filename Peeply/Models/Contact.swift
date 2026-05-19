@@ -25,7 +25,8 @@ final class Contact {
     var socialMediaLinks: [String: String] // Platform name -> URL/username
     var createdAt: Date?
     var wasPersonOfTheDay: Date?
-    
+    var displaySortKey: String // Persisted sort key used to preserve "last name if present, otherwise first name" ordering at fetch time
+
     init(
         id: UUID = UUID(),
         firstName: String,
@@ -58,5 +59,19 @@ final class Contact {
         self.socialMediaLinks = socialMediaLinks
         self.createdAt = createdAt
         self.wasPersonOfTheDay = wasPersonOfTheDay
+        self.displaySortKey = Contact.makeDisplaySortKey(firstName: firstName, lastName: lastName)
+    }
+
+    static func makeDisplaySortKey(firstName: String, lastName: String?) -> String {
+        let trimmedLastName = lastName?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        if !trimmedLastName.isEmpty {
+            return trimmedLastName.lowercased()
+        } else {
+            return firstName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        }
+    }
+
+    func refreshDisplaySortKey() {
+        displaySortKey = Contact.makeDisplaySortKey(firstName: firstName, lastName: lastName)
     }
 }
