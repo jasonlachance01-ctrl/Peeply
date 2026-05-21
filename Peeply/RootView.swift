@@ -10,19 +10,24 @@ import SwiftData
 
 struct RootView: View {
     @State private var navigationPath = NavigationPath()
+
     @Query private var users: [PeeplyUser]
     @Query private var contacts: [Contact]
     @Environment(\.modelContext) private var modelContext
-    
+
     private var currentUser: PeeplyUser? {
         users.first
     }
-    
+
     private var rootView: AppRoute {
-        // Always start at splash. SplashView handles routing: Person of the Day for returning users, welcome for new users.
+        // Always start at splash. SplashView handles routing:
+        // - Person of the Day for returning users
+        // - onboarding for brand-new users
+        // - plan selection for onboarded unpaid users
+        // - contact import for onboarded paid users who have not imported contacts yet
         return .splash
     }
-    
+
     var body: some View {
         NavigationStack(path: $navigationPath) {
             rootContentView
@@ -37,7 +42,7 @@ struct RootView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private var rootContentView: some View {
         switch rootView {
@@ -49,11 +54,21 @@ struct RootView: View {
             ContactImportView(navigationPath: $navigationPath)
         case .planSelection:
             PlanSelectionView(navigationPath: $navigationPath)
-        default:
-            SplashView(navigationPath: $navigationPath)
+        case .onboarding:
+            OnboardingView(navigationPath: $navigationPath)
+        case .contactDetail(let contact):
+            ContactDetailView(navigationPath: $navigationPath, contact: contact)
+        case .support:
+            SupportView()
+        case .about:
+            AboutView()
+        case .privacyPolicy:
+            PrivacyPolicyView()
+        case .termsOfService:
+            TermsOfServiceView()
         }
     }
-    
+
     @ViewBuilder
     private func destinationView(for route: AppRoute) -> some View {
         switch route {

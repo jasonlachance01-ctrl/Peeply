@@ -14,6 +14,7 @@ struct SplashView: View {
     @Query private var users: [PeeplyUser]
     @Query private var contacts: [Contact]
     @Environment(\.modelContext) private var modelContext
+
     @State private var showPersonOfTheDay = false //Is the sheet currently being presented
     @State private var personOfTheDayContact: Contact?
     @State private var didRouteReturningUser = false
@@ -34,6 +35,7 @@ struct SplashView: View {
         guard !didRouteReturningUser else { return }
         didRouteReturningUser = true
         didInitialRoute = true
+        navigationPath = NavigationPath()
         navigationPath.append(AppRoute.contactList)
     }
 
@@ -55,11 +57,14 @@ struct SplashView: View {
         ContactSortKeyMigration.backfillDisplaySortKeysIfNeeded(in: modelContext)
     }
 
+    /// Centralized startup router.
+    ///
+    /// Expected flow:
+    /// - No user yet -> onboarding
+    /// - Onboarding complete, no active entitlement -> plan selection
+    /// - Onboarding complete, active entitlement, contacts not imported -> contact import
+    /// - Contacts imported -> returning user flow / Person of the Day / contact list
     private func runReturningUserRouting() {
-        // Must have a user or we can't route
-        guard let user = currentUser else {
-            return
-        }
         // Once Splash has made its startup decision, later changes to users or contacts stop re-running routing logic
         // This prevents splash from behaving like a long-lived global router after launch
         guard !didInitialRoute else { return }
@@ -68,15 +73,27 @@ struct SplashView: View {
         // This is a one-time backfill for records created before displaySortKey existed.
         runDisplaySortKeyMigrationIfNeeded()
 
+        // Case 0: No user exists yet - brand new install path
+        guard let user = currentUser else {
+            didInitialRoute = true
+            navigationPath = NavigationPath()
+            navigationPath.append(AppRoute.onboarding)
+            return
+        }
+
         // Case 1: User has imported contacts - returning user path
         if user.contactsImported {
+            didInitialRoute = true
+
             // Update Person of the Day
             PersonOfTheDayManager.updatePersonOfTheDay(for: user, contacts: contacts, in: modelContext)
+
             // If the user already handled Person of the Day today, go straight to contact list
             if user.hasContactedPersonOfTheDay {
                 routeToContactListIfNeeded()
                 return
             }
+
             // Otherwise, try to show Person of the Day
             if !didPresentPersonOfTheDay,
                let contactId = user.personOfTheDayContactId,
@@ -86,54 +103,63 @@ struct SplashView: View {
                 showPersonOfTheDay = true
                 return
             }
+
             // If we did not show Person of the Day for any reason, go to contact list once
             routeToContactListIfNeeded()
             return
         }
 
         // From here on, user.contactsImported == false
-        // Case 2: User finished onboarding but didn't import contacts yet
-        if user.onboardingCompleted {
-            didInitialRoute = true
-            navigationPath = NavigationPath()
-            Task {
-                do {
-                    let customerInfo = try await Purchases.shared.customerInfo()
-                    let peeplyProActive = customerInfo.entitlements["Peeply Pro"]?.isActive == true
 
-                    await MainActor.run {
-                        // Re-read user on the main actor in case it changed
-                        guard let latestUser = currentUser else {
-                            navigationPath.append(AppRoute.planSelection)
-                            return
-                        }
-                        // If onboarding is complete and contacts are still not imported
-                        guard latestUser.onboardingCompleted, latestUser.contactsImported ==
-                                false else {
-                            navigationPath.append(AppRoute.planSelection)
-                            return
-                        }
-
-                        if peeplyProActive {
-                            navigationPath.append(AppRoute.contactImport)
-                        } else {
-                            navigationPath.append(AppRoute.planSelection)
-                        }
-                    }
-                } catch {
-                    await MainActor.run {
-                        navigationPath.append(AppRoute.planSelection)
-                    }
-                }
-            }
-            return
-        }
-        // Case 3: User has NOT completed onboarding and has NOT imported contacts
-        if user.onboardingCompleted == false && user.contactsImported == false {
+        // Case 2: User has NOT completed onboarding and has NOT imported contacts
+        if user.onboardingCompleted == false {
             didInitialRoute = true
             navigationPath = NavigationPath()
             navigationPath.append(AppRoute.onboarding)
             return
+        }
+
+        // Case 3: User finished onboarding but still needs entitlement routing
+        didInitialRoute = true
+        navigationPath = NavigationPath()
+
+        Task {
+            do {
+                let customerInfo = try await Purchases.shared.customerInfo()
+                let peeplyProActive = customerInfo.entitlements["Peeply Pro"]?.isActive == true
+
+                await MainActor.run {
+                    // Re-read user on the main actor in case it changed
+                    guard let latestUser = currentUser else {
+                        navigationPath.append(AppRoute.onboarding)
+                        return
+                    }
+
+                    // Returning-user guard: if contacts were imported while this async task was running,
+                    // route directly to the contact list instead of continuing the paywall/import path.
+                    if latestUser.contactsImported {
+                        navigationPath.append(AppRoute.contactList)
+                        return
+                    }
+
+                    // If onboarding is no longer complete, restart onboarding.
+                    guard latestUser.onboardingCompleted else {
+                        navigationPath.append(AppRoute.onboarding)
+                        return
+                    }
+
+                    if peeplyProActive {
+                        navigationPath.append(AppRoute.contactImport)
+                    } else {
+                        navigationPath.append(AppRoute.planSelection)
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    // If RevenueCat lookup fails, default to the paywall for onboarded users.
+                    navigationPath.append(AppRoute.planSelection)
+                }
+            }
         }
     }
 
@@ -165,7 +191,6 @@ struct SplashView: View {
         }
         .onChange(of: contacts) { _, _ in
             guard !didInitialRoute else { return }
-            //guard !didRouteReturningUser else { return }
             runReturningUserRouting()
         }
         .sheet(isPresented: $showPersonOfTheDay, onDismiss: {
@@ -250,24 +275,24 @@ struct SplashView: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 48)
             }
-        }
-        .background {
-            ZStack {
-                Image("SplashBackground")
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
+            .background {
+                ZStack {
+                    Image("SplashBackground")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
 
-                LinearGradient(
-                    colors: [
-                        Color.black.opacity(0.1),
-                        Color.black.opacity(0.3),
-                        Color.black.opacity(0.55)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
+                    LinearGradient(
+                        colors: [
+                            Color.black.opacity(0.1),
+                            Color.black.opacity(0.3),
+                            Color.black.opacity(0.55)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                }
+                .ignoresSafeArea()
             }
-            .ignoresSafeArea()
         }
     }
 }

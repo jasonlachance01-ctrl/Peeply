@@ -26,14 +26,16 @@ struct OnboardingView: View {
     @Binding var navigationPath: NavigationPath
     @Query private var users: [PeeplyUser]
     @Environment(\.modelContext) private var modelContext
+
     @State private var showWelcome = true
     @State private var currentQuestionIndex = 0
     @State private var emailInput = ""
-    
+    @State private var showEmailValidationMessage = false
+
     private var currentUser: PeeplyUser? {
         users.first
     }
-    
+
     private let questions: [OnboardingQuestion] = [
         OnboardingQuestion(
             id: 1,
@@ -106,72 +108,118 @@ struct OnboardingView: View {
             answers: ["Absolutely, without hesitation", "Mostly yes", "Honestly, probably not enough"]
         )
     ]
-    
+
     private var currentQuestion: OnboardingQuestion {
         questions[currentQuestionIndex]
     }
-    
+
     private var isLastQuestion: Bool {
         currentQuestionIndex == questions.count - 1
     }
-    
+
+    // Trimmed email value used for validation and persistence.
+    private var trimmedEmailInput: String {
+        emailInput.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    // Email is mandatory for the first onboarding question.
+    // Keeping this logic centralized makes the UI state and action guard match.
+    private var isEmailQuestionValid: Bool {
+        isValidEmail(trimmedEmailInput)
+    }
+
     private func startQuestions() {
         if currentUser == nil {
             let newUser = PeeplyUser(email: "", subscriptionTier: .gettingStarted)
             modelContext.insert(newUser)
             try? modelContext.save()
         }
+
         showWelcome = false
     }
-    
+
     private func answerQuestion() {
         if currentQuestion.type == .textEntry {
-            currentUser?.email = emailInput
-            
-            if currentQuestion.type == .textEntry && !emailInput.isEmpty {
-                let formURL = "https://docs.google.com/forms/d/e/1FAIpQLSfdbkH2r12DaY2mtW4HAh1w3xOisVUT7wHhN89aUE2NtQkt_Q/formResponse"
-                let fieldID = "entry.1562517931"
-                if let encoded = emailInput.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-                   let url = URL(string: formURL) {
-                    var request = URLRequest(url: url)
-                    request.httpMethod = "POST"
-                    request.httpBody = "\(fieldID)=\(encoded)".data(using: .utf8)
-                    request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-                    URLSession.shared.dataTask(with: request).resume()
-                }
+            // Email is mandatory for onboarding question 1.
+            // Guard here even though the button is disabled so business logic matches the UI.
+            guard isEmailQuestionValid else {
+                showEmailValidationMessage = true
+                return
             }
-            try? modelContext.save()
+
+            currentUser?.email = trimmedEmailInput
+            showEmailValidationMessage = false
+
+            // Submit the captured email to the existing Google Form endpoint.
+            let formURL = "https://docs.google.com/forms/d/e/1FAIpQLSfdbkH2r12DaY2mtW4HAh1w3xOisVUT7wHhN89aUE2NtQkt_Q/formResponse"
+            let fieldID = "entry.1562517931"
+
+            if let encoded = trimmedEmailInput.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+               let url = URL(string: formURL) {
+                var request = URLRequest(url: url)
+                request.httpMethod = "POST"
+                request.httpBody = "\(fieldID)=\(encoded)".data(using: .utf8)
+                request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+                URLSession.shared.dataTask(with: request).resume()
+            }
         }
+
+        try? modelContext.save()
+
         if isLastQuestion {
-            navigateToContactImport()
+            navigateToPlanSelection()
         } else {
             currentQuestionIndex += 1
         }
     }
-    
+
     private func skipQuestion() {
+        // The email question is mandatory, so prevent skipping it.
+        if currentQuestion.type == .textEntry {
+            showEmailValidationMessage = true
+            return
+        }
+
         if isLastQuestion {
-            navigateToContactImport()
+            navigateToPlanSelection()
         } else {
             currentQuestionIndex += 1
         }
     }
-    
+
     private func skipOnboarding() {
-        navigateToContactImport()
+        navigateToPlanSelection()
     }
-    
-    private func navigateToContactImport() {
+
+    // This onboarding flow ends at the paywall / plan-selection screen.
+    // The old name suggested direct routing to contact import, but the app actually
+    // requires plan selection first and only routes to contact import after purchase.
+    private func navigateToPlanSelection() {
         currentUser?.onboardingCompleted = true
         try? modelContext.save()
+
         navigationPath = NavigationPath()
         navigationPath.append(AppRoute.planSelection)
     }
-    
+
+    // Lightweight email validation:
+    // - mandatory,
+    // - trims whitespace,
+    // - requires a generally valid address format.
+    //
+    // This is intentionally simple UI validation rather than a perfect RFC parser.
+    private func isValidEmail(_ email: String) -> Bool {
+        guard !email.isEmpty else { return false }
+
+        let pattern = #"^[A-Z0-9a-z._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$"#
+        return email.range(of: pattern, options: .regularExpression) != nil
+    }
+
     var body: some View {
         ZStack {
             Color.white
                 .ignoresSafeArea()
+
             if showWelcome {
                 welcomeView
             } else {
@@ -180,11 +228,11 @@ struct OnboardingView: View {
         }
         .navigationBarBackButtonHidden(true)
     }
-    
+
     private var welcomeView: some View {
         VStack(spacing: 0) {
             Spacer()
-            
+
             // Welcome content - top third of page
             VStack(spacing: 32) {
                 // Welcome text
@@ -197,9 +245,9 @@ struct OnboardingView: View {
             }
             .padding(.top, 56)
             .frame(maxWidth: .infinity)
-            
+
             Spacer()
-            
+
             // Get Started button
             Button(action: startQuestions) {
                 Text("Let's Go")
@@ -225,7 +273,7 @@ struct OnboardingView: View {
             UINavigationBar.appearance().compactAppearance = appearance
         }
     }
-    
+
     private var questionView: some View {
         VStack(spacing: 0) {
             // Progress indicator
@@ -237,11 +285,29 @@ struct OnboardingView: View {
                     .padding(.top, 16)
                     .padding(.trailing, 20)
             }
-            
+
             Spacer()
-            
+
             if currentQuestion.type == .textEntry {
                 VStack(spacing: 12) {
+                    // Question text
+                    Text(currentQuestion.question)
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(Color.peeplyCharcoal)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
+                        .padding(.top, 24)
+
+                    if let subtitle = currentQuestion.subtitle {
+                        Text(subtitle)
+                            .font(.subheadline)
+                            .foregroundStyle(Color.peeplyCharcoal.opacity(0.7))
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 20)
+                            .padding(.top, 8)
+                    }
+
                     HStack(spacing: 12) {
                         TextField("Email address", text: $emailInput)
                             .textInputAutocapitalization(.never)
@@ -252,23 +318,46 @@ struct OnboardingView: View {
                             .frame(height: 50)
                             .background(Color.peeplyWhite)
                             .cornerRadius(16)
-                        
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .stroke(
+                                        showEmailValidationMessage && !isEmailQuestionValid
+                                        ? Color.red.opacity(0.7)
+                                        : Color.clear,
+                                        lineWidth: 1
+                                    )
+                            )
+                            .onSubmit {
+                                answerQuestion()
+                            }
+                            .onChange(of: emailInput) { _, _ in
+                                // Clear the validation state as soon as the user begins correcting input.
+                                if isEmailQuestionValid {
+                                    showEmailValidationMessage = false
+                                }
+                            }
+
                         Button(action: answerQuestion) {
                             Image(systemName: "arrow.forward.circle.fill")
                                 .font(.system(size: 32))
-                                .foregroundStyle(Color.peeplyCharcoal)
+                                .foregroundStyle(
+                                    isEmailQuestionValid
+                                    ? Color.peeplyCharcoal
+                                    : Color.peeplyCharcoal.opacity(0.35)
+                                )
                         }
+                        .disabled(!isEmailQuestionValid)
                     }
-                    
-                    if let subtitle = currentQuestion.subtitle {
-                        Text(subtitle)
-                            .font(.subheadline)
-                            .foregroundStyle(Color.peeplyCharcoal.opacity(0.7))
+                    .padding(.horizontal, 20)
+
+                    if showEmailValidationMessage && !isEmailQuestionValid {
+                        Text("Please enter a valid email address to continue.")
+                            .font(.footnote)
+                            .foregroundStyle(Color.red)
                             .multilineTextAlignment(.center)
+                            .padding(.horizontal, 20)
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 24)
             } else {
                 // Question text
                 Text(currentQuestion.question)
@@ -278,51 +367,62 @@ struct OnboardingView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
                     .padding(.vertical, 24)
-            }
-            
-            Spacer()
-            
-            // Answer buttons
-            if currentQuestion.type != .textEntry {
-                VStack(spacing: 16) {
-                    ForEach(currentQuestion.answers, id: \.self) { answer in
-                        Button(action: answerQuestion) {
-                            Text(answer)
-                                .font(.headline)
-                                .foregroundStyle(Color.white)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 50)
-                                .background(Color.peeplyPink)
-                                .cornerRadius(16)
+
+                if let subtitle = currentQuestion.subtitle {
+                    Text(subtitle)
+                        .font(.subheadline)
+                        .foregroundStyle(Color.peeplyCharcoal.opacity(0.7))
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 24)
+                }
+
+                Spacer()
+
+                // Answer buttons
+                if currentQuestion.type != .textEntry {
+                    VStack(spacing: 16) {
+                        ForEach(currentQuestion.answers, id: \.self) { answer in
+                            Button(action: answerQuestion) {
+                                Text(answer)
+                                    .font(.headline)
+                                    .foregroundStyle(Color.white)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 50)
+                                    .background(Color.peeplyPink)
+                                    .cornerRadius(16)
+                            }
+                            .padding(.horizontal, 20)
                         }
                     }
+                    .padding(.bottom, 24)
                 }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 24)
-            }
-            
-            // Navigation buttons
-            if currentQuestion.type != .textEntry {
-                HStack {
-                    // Skip Onboarding button
-                    Button(action: skipOnboarding) {
-                        Text("Skip Onboarding")
-                            .font(.subheadline)
-                            .foregroundStyle(Color.peeplyCharcoal.opacity(0.6))
+
+                // Navigation buttons
+                if currentQuestion.type != .textEntry {
+                    HStack {
+                        // Skip Onboarding button
+                        Button(action: skipOnboarding) {
+                            Text("Skip Onboarding")
+                                .font(.subheadline)
+                                .foregroundStyle(Color.peeplyCharcoal.opacity(0.6))
+                        }
+
+                        Spacer()
+
+                        // Skip Question button
+                        Button(action: skipQuestion) {
+                            Text("Skip Question")
+                                .font(.subheadline)
+                                .foregroundStyle(Color.peeplyCharcoal.opacity(0.6))
+                        }
                     }
-                    
-                    Spacer()
-                    
-                    // Skip Question button
-                    Button(action: skipQuestion) {
-                        Text("Skip Question")
-                            .font(.subheadline)
-                            .foregroundStyle(Color.peeplyCharcoal.opacity(0.6))
-                    }
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 32)
                 }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 32)
             }
+
+            Spacer()
         }
     }
 }
