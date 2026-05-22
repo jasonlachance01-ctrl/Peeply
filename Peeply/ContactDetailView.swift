@@ -15,6 +15,7 @@ import PhotosUI
 // Transferable type for loading image data from PhotosPicker
 private struct ImageDataTransfer: Transferable {
     let data: Data
+
     static var transferRepresentation: some TransferRepresentation {
         DataRepresentation(importedContentType: .image) { data in
             ImageDataTransfer(data: data)
@@ -29,7 +30,6 @@ private struct IndexedItem: Identifiable {
     let value: String
 }
 
-
 struct ContactDetailView: View {
     @Binding var navigationPath: NavigationPath
     let contact: Contact
@@ -43,21 +43,22 @@ struct ContactDetailView: View {
     @State private var socialMediaInput = ""
     @State private var showEditSheet = false
     @State private var showStreakCelebration = false
-    
+    @State private var showDeleteConfirmation = false
+
     // Cache arrays to prevent re-observation issues
     // These computed properties ensure we only observe the arrays once per view evaluation
     private var phoneNumbers: [String] {
         contact.phoneNumbers
     }
-    
+
     private var emails: [String] {
         contact.emails
     }
-    
+
     private var addresses: [String] {
         contact.addresses
     }
-    
+
     // Create indexed items with stable IDs for ForEach
     // Uses contact ID + index + value hash to ensure uniqueness and stability
     private func indexedItems(from array: [String]) -> [IndexedItem] {
@@ -69,7 +70,7 @@ struct ContactDetailView: View {
             )
         }
     }
-    
+
     private var fullName: String {
         if let lastName = contact.lastName, !lastName.isEmpty {
             return "\(contact.firstName) \(lastName)"
@@ -77,18 +78,18 @@ struct ContactDetailView: View {
             return contact.firstName
         }
     }
-    
+
     private var initials: String {
         let firstInitial = contact.firstName.prefix(1).uppercased()
         let lastInitial = contact.lastName?.prefix(1).uppercased() ?? ""
         return "\(firstInitial)\(lastInitial)"
     }
-    
+
     private var contactPhoto: UIImage? {
         guard let photoData = contact.photoData else { return nil }
         return UIImage(data: photoData)
     }
-    
+
     private func formattedDateString() -> String {
         if let date = contact.lastOneToOne {
             let formatter = DateFormatter()
@@ -99,28 +100,28 @@ struct ContactDetailView: View {
             return "Not set"
         }
     }
-    
+
     private func formattedBirthdayString(for date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
         formatter.timeStyle = .none
         return formatter.string(from: date)
     }
-    
+
     private func openDatePicker() {
         selectedDate = contact.lastOneToOne ?? Date()
         showDatePicker = true
     }
-    
+
     private var currentUser: PeeplyUser? {
         users.first
     }
-    
+
     private func saveDate() {
         let wasToday = StreakManager.isToday(selectedDate)
         contact.lastOneToOne = selectedDate
         try? modelContext.save()
-        
+
         // Update streak if date is today
         if wasToday, let user = currentUser {
             let streakContinued = StreakManager.updateStreak(for: user, in: modelContext)
@@ -132,15 +133,15 @@ struct ContactDetailView: View {
                 }
             }
         }
-        
+
         showDatePicker = false
     }
-    
+
     private func phoneLabel(for index: Int) -> String {
         let labels = ["mobile", "home", "work"]
         return labels[index % labels.count]
     }
-    
+
     private func cleanPhoneNumber(_ phoneNumber: String) -> String {
         // Remove all characters except digits and + sign
         // This preserves country codes (e.g., +1 for US) while removing formatting
@@ -171,122 +172,139 @@ struct ContactDetailView: View {
 
         return phone
     }
-    
+
     private func callPhone(_ phoneNumber: String) {
         let cleaned = cleanPhoneNumber(phoneNumber)
         if let url = URL(string: "tel://\(cleaned)") {
             openURL(url)
         }
     }
-    
+
     private func sendMessage(_ phoneNumber: String) {
         let cleaned = cleanPhoneNumber(phoneNumber)
-        
+
         // Debug: Print the original and cleaned phone numbers, and the URL
         print("DEBUG sendMessage:")
-        print("  Original: \(phoneNumber)")
-        print("  Cleaned: \(cleaned)")
-        
+        print(" Original: \(phoneNumber)")
+        print(" Cleaned: \(cleaned)")
+
         // Construct the SMS URL
         // Format: sms:+15555551212 or sms:5555551212
         // Note: The + sign should work without encoding in sms: URLs, but we'll try both approaches
         let smsURLString = "sms:\(cleaned)"
-        print("  SMS URL (before encoding): \(smsURLString)")
-        
+        print(" SMS URL (before encoding): \(smsURLString)")
+
         // Try creating URL directly first (works for most cases)
         if let url = URL(string: smsURLString) {
-            print("  Opening URL: \(url.absoluteString)")
+            print(" Opening URL: \(url.absoluteString)")
             openURL(url)
         } else {
             // If direct creation fails, try URL encoding
             if let encoded = cleaned.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
                let url = URL(string: "sms:\(encoded)") {
-                print("  Opening URL (encoded): \(url.absoluteString)")
+                print(" Opening URL (encoded): \(url.absoluteString)")
                 openURL(url)
             } else {
-                print("  ERROR: Failed to create URL from string: \(smsURLString)")
+                print(" ERROR: Failed to create URL from string: \(smsURLString)")
             }
         }
     }
-    
+
     private func sendEmail(_ email: String) {
         // Construct the mailto URL
         // Format: mailto:user@example.com
         let mailtoURLString = "mailto:\(email)"
-        
+
         if let url = URL(string: mailtoURLString) {
             openURL(url)
         }
     }
-    
+
     private func startFaceTimeAudio(_ phoneNumber: String) {
         let cleaned = cleanPhoneNumber(phoneNumber)
         let facetimeURLString = "facetime-audio://\(cleaned)"
-        
+
         if let url = URL(string: facetimeURLString) {
             openURL(url)
         }
     }
-    
+
     private func startFaceTimeVideo(_ phoneNumber: String) {
         let cleaned = cleanPhoneNumber(phoneNumber)
         let facetimeURLString = "facetime://\(cleaned)"
-        
+
         if let url = URL(string: facetimeURLString) {
             openURL(url)
         }
     }
-    
+
     private func openMaps(with address: String) {
         // URL-encode the address for use in the Apple Maps URL
         guard let encodedAddress = address.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
             print("ERROR: Failed to encode address: \(address)")
             return
         }
-        
+
         // Construct the Apple Maps URL
         // Format: http://maps.apple.com/?address=[encoded address]
         let mapsURLString = "http://maps.apple.com/?address=\(encodedAddress)"
-        
+
         if let url = URL(string: mapsURLString) {
             openURL(url)
         } else {
             print("ERROR: Failed to create URL from string: \(mapsURLString)")
         }
     }
-    
+
     private func openSocialMediaInput(for platform: String) {
         selectedPlatform = platform
         socialMediaInput = contact.socialMediaLinks[platform] ?? ""
         showSocialMediaInput = true
     }
-    
+
     private func saveSocialMediaLink() {
         guard !socialMediaInput.trimmingCharacters(in: .whitespaces).isEmpty else { return }
-        
+
         // Normalize the input - if it doesn't start with http:// or https://, add https://
         var link = socialMediaInput.trimmingCharacters(in: .whitespaces)
         if !link.hasPrefix("http://") && !link.hasPrefix("https://") {
             link = "https://\(link)"
         }
-        
+
         contact.socialMediaLinks[selectedPlatform] = link
         try? modelContext.save()
-        
+
         showSocialMediaInput = false
         socialMediaInput = ""
         selectedPlatform = ""
     }
-    
+
     private func openSocialMediaLink(_ link: String) {
         guard let url = URL(string: link) else { return }
         openURL(url)
     }
-    
+
     private func getSocialMediaLink(for platform: String) -> String? {
         return contact.socialMediaLinks[platform]
     }
-    
+
+    private func deleteContact() {
+        // If this contact is the active Person of the Day, clear the active POD state
+        // so startup routing does not point at a deleted record.
+        if let user = currentUser, user.personOfTheDayContactId == contact.id {
+            user.personOfTheDayContactId = nil
+            user.personOfTheDayDate = nil
+            user.hasContactedPersonOfTheDay = false
+        }
+
+        modelContext.delete(contact)
+        try? modelContext.save()
+
+        if !navigationPath.isEmpty {
+            navigationPath.removeLast()
+        }
+    }
+
     var body: some View {
         Form {
             Section {
@@ -310,19 +328,19 @@ struct ContactDetailView: View {
                                     .foregroundStyle(.secondary)
                             )
                     }
-                    
+
                     // Name
                     Text(fullName)
                         .font(.title)
                         .fontWeight(.bold)
-                    
+
                     // Company and job title
                     if let company = contact.company, !company.isEmpty {
                         Text(company)
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
-                    
+
                     if let jobTitle = contact.jobTitle, !jobTitle.isEmpty {
                         Text(jobTitle)
                             .font(.subheadline)
@@ -332,7 +350,7 @@ struct ContactDetailView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 8)
             }
-            
+
             Section {
                 Button(action: openDatePicker) {
                     HStack {
@@ -344,7 +362,7 @@ struct ContactDetailView: View {
                     }
                 }
             }
-            
+
             // Phone Numbers Section
             Section("Phone") {
                 if phoneNumbers.isEmpty {
@@ -360,7 +378,9 @@ struct ContactDetailView: View {
                                 Text(formatPhoneNumber(item.value))
                                     .foregroundStyle(.primary)
                             }
+
                             Spacer()
+
                             Button(action: {
                                 callPhone(item.value)
                             }) {
@@ -368,6 +388,7 @@ struct ContactDetailView: View {
                                     .foregroundStyle(.blue)
                             }
                             .buttonStyle(.plain)
+
                             Button(action: {
                                 sendMessage(item.value)
                             }) {
@@ -375,6 +396,7 @@ struct ContactDetailView: View {
                                     .foregroundStyle(.blue)
                             }
                             .buttonStyle(.plain)
+
                             Button(action: {
                                 startFaceTimeAudio(item.value)
                             }) {
@@ -382,6 +404,7 @@ struct ContactDetailView: View {
                                     .foregroundStyle(.blue)
                             }
                             .buttonStyle(.plain)
+
                             Button(action: {
                                 startFaceTimeVideo(item.value)
                             }) {
@@ -393,7 +416,7 @@ struct ContactDetailView: View {
                     }
                 }
             }
-            
+
             // Email Addresses Section
             Section("Email") {
                 if emails.isEmpty {
@@ -416,7 +439,7 @@ struct ContactDetailView: View {
                     }
                 }
             }
-            
+
             // Addresses Section
             Section("Address") {
                 if addresses.isEmpty {
@@ -439,7 +462,7 @@ struct ContactDetailView: View {
                     }
                 }
             }
-            
+
             // Birthday Section
             Section("Birthday") {
                 if let birthday = contact.birthday {
@@ -450,7 +473,7 @@ struct ContactDetailView: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            
+
             // Notes Section
             Section("Notes") {
                 if let notes = contact.notes, !notes.isEmpty {
@@ -461,7 +484,7 @@ struct ContactDetailView: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            
+
             // Social Media Section
             Section("Social Media") {
                 socialMediaRow(platform: "Instagram")
@@ -482,10 +505,30 @@ struct ContactDetailView: View {
         }
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Edit") {
-                    showEditSheet = true
+                Menu {
+                    Button {
+                        showEditSheet = true
+                    } label: {
+                        Label("Edit", systemImage: "pencil")
+                    }
+
+                    Button(role: .destructive) {
+                        showDeleteConfirmation = true
+                    } label: {
+                        Label("Delete Contact", systemImage: "trash")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
                 }
             }
+        }
+        .alert("Delete Contact", isPresented: $showDeleteConfirmation) {
+            Button("Delete", role: .destructive) {
+                deleteContact()
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("Are you sure you want to delete \(fullName)? This action cannot be undone.")
         }
         .sheet(isPresented: $showDatePicker) {
             DatePickerSheet(
@@ -521,7 +564,7 @@ struct ContactDetailView: View {
             )
         }
     }
-    
+
     @ViewBuilder
     private func socialMediaRow(platform: String) -> some View {
         if let link = getSocialMediaLink(for: platform) {
@@ -554,17 +597,17 @@ struct ContactDetailView: View {
             .buttonStyle(.plain)
         }
     }
-    
+
     private var celebrationView: some View {
         ZStack {
             Color.black.opacity(0.3)
                 .ignoresSafeArea()
-            
+
             VStack(spacing: 16) {
                 Text("🔥")
                     .font(.system(size: 60))
                     .scaleEffect(showStreakCelebration ? 1.3 : 1.0)
-                
+
                 if let user = currentUser {
                     Text("\(user.currentStreak) Day Streak!")
                         .font(.title2)
@@ -592,7 +635,7 @@ struct SocialMediaInputSheet: View {
     let onSave: () -> Void
     let onCancel: () -> Void
     @FocusState private var isInputFocused: Bool
-    
+
     var body: some View {
         NavigationStack {
             Form {
@@ -615,6 +658,7 @@ struct SocialMediaInputSheet: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", action: onCancel)
                 }
+
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save", action: onSave)
                         .fontWeight(.semibold)
@@ -632,7 +676,7 @@ struct EditContactSheet: View {
     let contact: Contact
     let onSave: () -> Void
     let onCancel: () -> Void
-    
+
     @State private var firstName: String
     @State private var lastName: String
     @State private var company: String
@@ -650,12 +694,12 @@ struct EditContactSheet: View {
     @State private var notes: String = ""
     @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var displayPhotoData: Data?
-    
+
     init(contact: Contact, onSave: @escaping () -> Void, onCancel: @escaping () -> Void) {
         self.contact = contact
         self.onSave = onSave
         self.onCancel = onCancel
-        
+
         _firstName = State(initialValue: contact.firstName)
         _lastName = State(initialValue: contact.lastName ?? "")
         _company = State(initialValue: contact.company ?? "")
@@ -665,7 +709,7 @@ struct EditContactSheet: View {
         _emails = State(initialValue: contact.emails)
         _notes = State(initialValue: contact.notes ?? "")
     }
-    
+
     private var isFormValid: Bool {
         !firstName.trimmingCharacters(in: .whitespaces).isEmpty
     }
@@ -690,7 +734,7 @@ struct EditContactSheet: View {
 
         return phone
     }
-    
+
     private func saveChanges() {
         contact.firstName = firstName.trimmingCharacters(in: .whitespaces)
         contact.lastName = lastName.trimmingCharacters(in: .whitespaces).isEmpty ? nil : lastName.trimmingCharacters(in: .whitespaces)
@@ -698,28 +742,28 @@ struct EditContactSheet: View {
         contact.company = company.trimmingCharacters(in: .whitespaces).isEmpty ? nil : company.trimmingCharacters(in: .whitespaces)
         contact.jobTitle = jobTitle.trimmingCharacters(in: .whitespaces).isEmpty ? nil : jobTitle.trimmingCharacters(in: .whitespaces)
         contact.birthday = birthday
-        
+
         if let photoData = displayPhotoData {
             contact.photoData = photoData
         }
-        
+
         // Save phone numbers (filter out empty ones)
         contact.phoneNumbers = phoneNumbers
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .filter { !$0.isEmpty }
-        
+
         // Save emails (filter out empty ones)
         contact.emails = emails
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .filter { !$0.isEmpty }
-        
+
         // Save notes
         let trimmedNotes = notes.trimmingCharacters(in: .whitespaces)
         contact.notes = trimmedNotes.isEmpty ? nil : trimmedNotes
-        
+
         onSave()
     }
-    
+
     private var editSheetPhotoOrInitials: some View {
         let data = displayPhotoData ?? contact.photoData
         let initialsText = "\(firstName.prefix(1).uppercased())\(lastName.prefix(1).uppercased())"
@@ -743,69 +787,69 @@ struct EditContactSheet: View {
             }
         }
     }
-    
+
     private func deletePhoneNumber(at offsets: IndexSet) {
         phoneNumbers.remove(atOffsets: offsets)
     }
-    
+
     private func editPhoneNumber(at index: Int) {
         editingPhoneIndex = index
         editingPhoneNumber = phoneNumbers[index]
         showPhoneNumberEditor = true
     }
-    
+
     private func addPhoneNumber() {
         editingPhoneIndex = nil
         editingPhoneNumber = ""
         showPhoneNumberEditor = true
     }
-    
+
     private func savePhoneNumber() {
         let trimmed = editingPhoneNumber.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
-        
+
         if let index = editingPhoneIndex {
             phoneNumbers[index] = trimmed
         } else {
             phoneNumbers.append(trimmed)
         }
-        
+
         showPhoneNumberEditor = false
         editingPhoneIndex = nil
         editingPhoneNumber = ""
     }
-    
+
     private func deleteEmail(at offsets: IndexSet) {
         emails.remove(atOffsets: offsets)
     }
-    
+
     private func editEmail(at index: Int) {
         editingEmailIndex = index
         editingEmail = emails[index]
         showEmailEditor = true
     }
-    
+
     private func addEmail() {
         editingEmailIndex = nil
         editingEmail = ""
         showEmailEditor = true
     }
-    
+
     private func saveEmail() {
         let trimmed = editingEmail.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
-        
+
         if let index = editingEmailIndex {
             emails[index] = trimmed
         } else {
             emails.append(trimmed)
         }
-        
+
         showEmailEditor = false
         editingEmailIndex = nil
         editingEmail = ""
     }
-    
+
     private func formattedBirthday() -> String {
         guard let birthday = birthday else { return "Add birthday" }
         let formatter = DateFormatter()
@@ -813,7 +857,7 @@ struct EditContactSheet: View {
         formatter.timeStyle = .none
         return formatter.string(from: birthday)
     }
-    
+
     var body: some View {
         NavigationStack {
             Form {
@@ -846,23 +890,23 @@ struct EditContactSheet: View {
                 } footer: {
                     Text("Tap to choose a photo from your library.")
                 }
-                
+
                 Section("Name") {
                     TextField("First Name", text: $firstName)
                         .textContentType(.givenName)
-                    
+
                     TextField("Last Name", text: $lastName)
                         .textContentType(.familyName)
                 }
-                
+
                 Section("Work") {
                     TextField("Company", text: $company)
                         .textContentType(.organizationName)
-                    
+
                     TextField("Job Title", text: $jobTitle)
                         .textContentType(.jobTitle)
                 }
-                
+
                 Section {
                     if phoneNumbers.isEmpty {
                         Button(action: addPhoneNumber) {
@@ -886,7 +930,7 @@ struct EditContactSheet: View {
                             .buttonStyle(.plain)
                         }
                         .onDelete(perform: deletePhoneNumber)
-                        
+
                         Button(action: addPhoneNumber) {
                             HStack {
                                 Text("Add Phone Number")
@@ -898,7 +942,7 @@ struct EditContactSheet: View {
                 } header: {
                     Text("Phone Numbers")
                 }
-                
+
                 Section {
                     if emails.isEmpty {
                         Button(action: addEmail) {
@@ -922,7 +966,7 @@ struct EditContactSheet: View {
                             .buttonStyle(.plain)
                         }
                         .onDelete(perform: deleteEmail)
-                        
+
                         Button(action: addEmail) {
                             HStack {
                                 Text("Add Email Address")
@@ -934,7 +978,7 @@ struct EditContactSheet: View {
                 } header: {
                     Text("Email Addresses")
                 }
-                
+
                 Section("Birthday") {
                     Button(action: {
                         showBirthdayPicker = true
@@ -947,7 +991,7 @@ struct EditContactSheet: View {
                         }
                     }
                 }
-                
+
                 Section("Notes") {
                     TextEditor(text: $notes)
                         .frame(minHeight: 100)
@@ -959,6 +1003,7 @@ struct EditContactSheet: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", action: onCancel)
                 }
+
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save", action: saveChanges)
                         .fontWeight(.semibold)
@@ -1016,7 +1061,7 @@ struct BirthdayPickerSheet: View {
     let onSave: () -> Void
     let onCancel: () -> Void
     let onClear: () -> Void
-    
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -1028,7 +1073,7 @@ struct BirthdayPickerSheet: View {
                 .datePickerStyle(.wheel)
                 .labelsHidden()
                 .padding()
-                
+
                 Spacer()
             }
             .navigationTitle("Birthday")
@@ -1037,6 +1082,7 @@ struct BirthdayPickerSheet: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", action: onCancel)
                 }
+
                 ToolbarItem(placement: .confirmationAction) {
                     HStack {
                         Button("Clear", action: onClear)
@@ -1056,11 +1102,11 @@ struct PhoneNumberEditorSheet: View {
     let onSave: () -> Void
     let onCancel: () -> Void
     @FocusState private var isPhoneNumberFocused: Bool
-    
+
     private var isFormValid: Bool {
         !phoneNumber.trimmingCharacters(in: .whitespaces).isEmpty
     }
-    
+
     var body: some View {
         NavigationStack {
             Form {
@@ -1079,6 +1125,7 @@ struct PhoneNumberEditorSheet: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", action: onCancel)
                 }
+
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save", action: onSave)
                         .fontWeight(.semibold)
@@ -1098,11 +1145,11 @@ struct EmailEditorSheet: View {
     let onSave: () -> Void
     let onCancel: () -> Void
     @FocusState private var isEmailFocused: Bool
-    
+
     private var isFormValid: Bool {
         !email.trimmingCharacters(in: .whitespaces).isEmpty
     }
-    
+
     var body: some View {
         NavigationStack {
             Form {
@@ -1123,6 +1170,7 @@ struct EmailEditorSheet: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", action: onCancel)
                 }
+
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save", action: onSave)
                         .fontWeight(.semibold)
