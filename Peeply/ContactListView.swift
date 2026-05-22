@@ -40,6 +40,10 @@ struct ContactListView: View {
     @State private var newContactEmail = ""
     @State private var newContactCompany = ""
 
+    // Delete confirmation state
+    @State private var contactPendingDeletion: Contact?
+    @State private var showDeleteConfirmation = false
+
     private var sortedContacts: [Contact] {
         // Contacts are now sorted at the SwiftData query layer using displaySortKey
         // to preserve the old "last name if present, otherwise first name" behavior
@@ -52,7 +56,7 @@ struct ContactListView: View {
         guard !query.isEmpty else { return sortedContacts }
         return sortedContacts.filter { contact in
             contact.firstName.lowercased().contains(query)
-                || (contact.lastName?.lowercased() ?? "").contains(query)
+            || (contact.lastName?.lowercased() ?? "").contains(query)
         }
     }
 
@@ -175,21 +179,11 @@ struct ContactListView: View {
             }
         }
 
-        // Update contacts first
         randomContacts = selected
+        showRandomizer = true
 
-        // Trigger haptic feedback
-        hapticGenerator.prepare()
+        // Haptic feedback
         hapticGenerator.impactOccurred()
-
-        // Show sheet - use DispatchQueue to ensure state update completes first
-        // This ensures randomContacts is set before the sheet is created
-        DispatchQueue.main.async {
-            // Double-check contacts are populated before showing
-            if !randomContacts.isEmpty {
-                showRandomizer = true
-            }
-        }
     }
 
     private func openContactDetail(_ contact: Contact) {
@@ -213,42 +207,59 @@ struct ContactListView: View {
         let trimmedEmail = newContactEmail.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedCompany = newContactCompany.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        guard !trimmedFirstName.isEmpty else {
-            return
-        }
+        guard !trimmedFirstName.isEmpty else { return }
 
-        let phoneNumbers = trimmedPhone.isEmpty ? [] : [trimmedPhone]
-        let emails = trimmedEmail.isEmpty ? [] : [trimmedEmail]
-        let newContact = Contact(
+        let contact = Contact(
             firstName: trimmedFirstName,
             lastName: trimmedLastName.isEmpty ? nil : trimmedLastName,
-            phoneNumbers: phoneNumbers,
-            emails: emails,
-            company: trimmedCompany.isEmpty ? nil : trimmedCompany,
-            createdAt: Date()
+            phoneNumbers: trimmedPhone.isEmpty ? [] : [trimmedPhone],
+            emails: trimmedEmail.isEmpty ? [] : [trimmedEmail],
+            company: trimmedCompany.isEmpty ? nil : trimmedCompany
         )
 
-        modelContext.insert(newContact)
+        modelContext.insert(contact)
+        try? modelContext.save()
 
-        do {
-            try modelContext.save()
-            showAddContactSheet = false
-            navigationPath.append(AppRoute.contactDetail(newContact))
-        } catch {
-            print("Failed to save new contact: \(error)")
-        }
-    }
-
-    private func discardNewContact() {
-        newContactFirstName = ""
-        newContactLastName = ""
-        newContactPhone = ""
-        newContactEmail = ""
-        newContactCompany = ""
         showAddContactSheet = false
     }
 
-    @ViewBuilder
+    private func discardNewContact() {
+        showAddContactSheet = false
+    }
+
+    private func confirmDelete(_ contact: Contact) {
+        contactPendingDeletion = contact
+        showDeleteConfirmation = true
+    }
+
+    private func deletePendingContact() {
+        guard let contact = contactPendingDeletion else { return }
+
+        // If this contact is the active Person of the Day, clear the active POD state
+        // so startup routing does not point at a deleted record.
+        if let user = currentUser, user.personOfTheDayContactId == contact.id {
+            user.personOfTheDayContactId = nil
+            user.personOfTheDayDate = nil
+            user.hasContactedPersonOfTheDay = false
+        }
+
+        if selectedContact?.id == contact.id {
+            selectedContact = nil
+            showDatePicker = false
+        }
+
+        if contactToOpenAfterSheetDismiss?.id == contact.id {
+            contactToOpenAfterSheetDismiss = nil
+        }
+
+        randomContacts.removeAll { $0.id == contact.id }
+
+        modelContext.delete(contact)
+        try? modelContext.save()
+
+        contactPendingDeletion = nil
+    }
+
     private func streakCard(user: PeeplyUser?) -> some View {
         Button(action: {
             showStreakDetails = true
@@ -387,6 +398,7 @@ struct ContactListView: View {
                 HStack(spacing: 8) {
                     Image(systemName: "magnifyingglass")
                         .foregroundStyle(Color.peeplyCharcoal.opacity(0.6))
+
                     TextField("Search contacts", text: $searchText)
                         .font(.system(size: 16, weight: .regular))
                         .foregroundStyle(Color.peeplyCharcoal)
@@ -402,14 +414,6 @@ struct ContactListView: View {
                                 .padding(.trailing, 4)
                             }
                         }
-                        .toolbar {
-                            ToolbarItemGroup(placement: .keyboard) {
-                                Spacer()
-                                Button("Done") {
-                                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                                }
-                            }
-                        }
                 }
                 .padding(12)
                 .background(Color.peeplyBackground)
@@ -418,20 +422,24 @@ struct ContactListView: View {
             }
 
             // Content
-            ScrollView {
-                VStack(spacing: 12) {
-                    // Streak and Growth cards side-by-side
+            List {
+                // Streak and Growth cards side-by-side
+                Section {
                     HStack(spacing: 12) {
                         streakCard(user: currentUser)
+
                         Button(action: { showNewContactsSheet = true }) {
                             growthTrackingCard
                         }
                         .buttonStyle(.plain)
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.top, 12)
+                    .listRowInsets(EdgeInsets(top: 12, leading: 16, bottom: 8, trailing: 16))
+                    .listRowBackground(Color.peeplyBackground)
+                    .listRowSeparator(.hidden)
+                }
 
-                    // Contact list
+                // Contact list
+                Section {
                     ForEach(filteredContacts, id: \.id) { contact in
                         HStack(spacing: 20) {
                             // Contact photo or initials
@@ -498,11 +506,22 @@ struct ContactListView: View {
                         .background(Color.peeplyWhite)
                         .cornerRadius(20)
                         .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 0)
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 4)
+                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                        .listRowBackground(Color.peeplyBackground)
+                        .listRowSeparator(.hidden)
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button(role: .destructive) {
+                                confirmDelete(contact)
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                            .buttonStyle(.automatic)
+                        }
                     }
                 }
             }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
             .background(Color.peeplyBackground)
         }
         .navigationBarHidden(true)
@@ -568,6 +587,14 @@ struct ContactListView: View {
                 celebrationView
             }
         }
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") {
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                }
+            }
+        }
         .alert("Connection Streak", isPresented: $showStreakDetails) {
             Button("OK", role: .cancel) { }
         } message: {
@@ -576,6 +603,16 @@ struct ContactListView: View {
             } else {
                 Text("Start a new streak today!")
             }
+        }
+        .alert("Delete Contact", isPresented: $showDeleteConfirmation, presenting: contactPendingDeletion) { contact in
+            Button("Delete", role: .destructive) {
+                deletePendingContact()
+            }
+            Button("Cancel", role: .cancel) {
+                contactPendingDeletion = nil
+            }
+        } message: { contact in
+            Text("Are you sure you want to delete \(fullName(for: contact))? This action cannot be undone.")
         }
         .onAppear {
             hapticGenerator.prepare()
@@ -751,7 +788,9 @@ struct ContactRandomizerSheet: View {
                                             .foregroundStyle(.secondary)
                                     }
                                 }
+
                                 Spacer()
+
                                 Image(systemName: "chevron.right")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
@@ -759,14 +798,14 @@ struct ContactRandomizerSheet: View {
                         }
                         .buttonStyle(.plain)
                     }
-                }
 
-                Text("📸 Take a screenshot! Once you close or navigate away from this unique Randomizer list you will not be able to return to it.")
-                    .font(.caption)
-                    .foregroundStyle(Color.peeplyCharcoal.opacity(0.6))
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 16)
+                    Text("📸 Take a screenshot! Once you close or navigate away from this unique Randomizer list you will not be able to return to it.")
+                        .font(.caption)
+                        .foregroundStyle(Color.peeplyCharcoal.opacity(0.6))
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 16)
+                }
             }
             .navigationTitle("Contact Randomizer")
             .navigationBarTitleDisplayMode(.inline)
@@ -823,11 +862,11 @@ struct DatePickerSheet: View {
                     hapticGenerator.prepare()
                     hapticGenerator.impactOccurred()
                 }
-                .onAppear {
-                    hapticGenerator.prepare()
-                }
 
                 Spacer()
+            }
+            .onAppear {
+                hapticGenerator.prepare()
             }
             .navigationTitle("Last One-to-One")
             .navigationBarTitleDisplayMode(.inline)
@@ -835,13 +874,14 @@ struct DatePickerSheet: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", action: onCancel)
                 }
+
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save", action: onSave)
                         .fontWeight(.semibold)
                 }
             }
+            .presentationDetents([.medium])
         }
-        .presentationDetents([.medium])
     }
 }
 
@@ -883,14 +923,15 @@ struct AddContactSheet: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Discard", role: .destructive, action: onDiscard)
                 }
+
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save", action: onSave)
                         .fontWeight(.semibold)
                         .disabled(!canSave)
                 }
             }
+            .presentationDetents([.large])
         }
-        .presentationDetents([.large])
     }
 }
 
